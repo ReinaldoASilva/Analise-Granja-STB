@@ -11,17 +11,18 @@ st.write("Manter a temperatura adequada no aviário é essencial para promover o
 dados_temperatura = pd.read_excel("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx")
 
 # Cria um gráfico de linha para temperatura média vs temperatura desejada
+#Criar figura e eixos
 fig, ax = plt.subplots()
-ax.plot(dados_temperatura['TP_Media_Diaria'], dados_temperatura['Temperatura_Desejada'], marker='o')
-ax.set_xlabel('Temperatura Média Diária')
-ax.set_ylabel('Temperatura Desejada')
-ax.set_title('Temperatura Média Diária vs Temperatura Desejada')
-st.pyplot(fig)
+ax.bar(dados_temperatura.index, dados_temperatura['Umidade_Media'], color='blue', label='Umidade Média')
+ax.bar(dados_temperatura.index, dados_temperatura['Umidade_Desejada'], color='red', label='Umidade Desejada')
 
-# Cria um gráfico de barras para umidade média vs umidade desejada
-fig, ax = plt.subplots()
-ax.bar(dados_temperatura['Umidade_Media'], dados_temperatura['Umidade_Desejada'])
-ax.set_xlabel('Umidade Média')
-ax.set_ylabel('Umidade Desejada')
+# Configurar rótulos e título
+ax.set_xlabel('Idade_Vida')
+ax.set_ylabel('Umidade')
 ax.set_title('Umidade Média vs Umidade Desejada')
+
+# Adicionar legenda
+ax.legend()
+
+# Exibir o gráfico usando o Streamlit
 st.pyplot(fig)
