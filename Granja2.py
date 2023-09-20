@@ -1,7 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import dash_table
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
 
+
+
+import plotly.graph_objects as go
 
 
 # Leitura do arquivo
@@ -68,6 +75,8 @@ granja = granja.drop(colunas_excluir, axis=1)
 # Transformar a coluna Temperatura desejada em inteiro
 granja['Temperatura_Desejada'] = granja['Temperatura_Desejada'].astype(int)
 
+granja['Umidade_Desejada'].value_counts()
+
 ########################################################################################################################################################################
 
 # Calcular Umidade média semanal
@@ -78,6 +87,42 @@ granja_umidade_diaria = granja.groupby('Idade de Vida')['Umidade_Media'].mean().
 
 ########################################################################################################################################################################
 
+# Análise Gráfica dos dados Temperatura e Umidade
+
+# Criar aplicativo Dash
+app = dash.Dash(__name__)
+
+# Layout do aplicativo
+app.layout = html.Div([
+    # Título do dashboard
+    html.H1('Dashboard de Temperatura e Umidade no Aviário'),
+    
+    # Gráfico de temperatura
+    html.H2('Gráfico de Temperatura'),
+    dcc.Graph(figure=go.Figure([
+        go.Scatter(x=granja['Idade de Vida'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
+        go.Scatter(x=granja['Idade de Vida'], y=granja['TP_Media_Diaria'], name='Temperatura Média Diária')
+    ])),
+    
+    # Gráfico de umidade
+    html.H2('Gráfico de Umidade'),
+    dcc.Graph(figure=go.Figure([
+        go.Scatter(x=granja['Idade de Vida'], y=granja['Umidade_Desejada'], name='Umidade Desejada'),
+        go.Scatter(x=granja['Idade de Vida'], y=granja['Umidade_Media'], name='Umidade Média')
+    ]))
+])
+
+# Executar o aplicativo Dash
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+
+
+
+
+########################################################################################################################################################################
+
+
 # Salvar o Arquivo
 
-granja.to_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/smaai_leituras_atualizado.xlsx')
+#granja.to_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/smaai_leituras_atualizado.xlsx')
