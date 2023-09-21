@@ -11,9 +11,6 @@ import plotly.graph_objects as go
 granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/smaai_leituras.xlsx')
 matriz = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/Umidade x Temperatura_cobb.xlsx')
 
-# Renomear a coluna data/hora
-granja = granja.rename(columns={'Data/Hora':'Data'}) 
-
 # Substituir valores nan por 0 
 granja = granja.fillna(0)
 
@@ -27,11 +24,17 @@ granja = granja.drop(columns=colunas_igual_1)
 
 # Excluir Colunas que não serão utilizadas
 colunas_inuteis = ['T1','T3','T4','T5','TU1_Temperatura','TU1_Umidade','AD1','AD2']
-granja = granja.drop(columns=colunas_inuteis)
+granja = granja.drop(columns=colunas_inuteis, )
 
 # Converter a coluna data para o tipo datetime
 granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'], format='%Y-%m-%d')
 
+#Determinar a data inicial
+data_inicial = granja['Data/Hora'].min()
+
+# Criar a nova coluna com a contagem dos dias
+granja['Idade em Dias'] = (granja['Data/Hora'] - data_inicial).dt.days + 1
+granja.columns
 
 # Criar coluna chamada semana
 primeira_data = granja['Data/Hora'].iloc[0]
@@ -41,15 +44,13 @@ granja['Semana'] = ((granja['Data/Hora'] - primeira_data).dt.days // 7).astype(i
 ########################################################################################################################################################################
 
 # Calcular a temperatura por Dia
-TP_Media_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].mean().apply(lambda x: int(x))
-TP_Maxima_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].max().apply(lambda x: int(x))
-TP_Minima_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].min().apply(lambda x: int(x))
+TP_Media_Diaria = granja.groupby('Data/Hora').agg({'Temperatura_Media': ['max', 'mean', 'min']}).reset_index()
 
-# Add média semanal ao dataframe
+# Renomear as colunas
+TP_Media_Diaria.columns = ['Data/Hora','TP_Media_Diaria','TP_Maxima_Diaria','TP_Minima_Diaria']
 
-granja['TP_Media_Diaria'] = granja['Data/Hora'].map(TP_Media_Diaria)
-granja['TP_Maxima_Diaria'] = granja['Data/Hora'].map(TP_Maxima_Diaria)
-granja['TP_Minima_Diaria'] = granja['Data/Hora'].map(TP_Minima_Diaria)
+# Add média Diária ao dataframe
+granja = granja.merge(TP_Media_Diaria, on='Data/Hora', how='left')
 
 # Calcular temperatura media Semanal
 TP_Media_Semanal = granja.groupby('Semana').agg({'Temperatura_Media': ['max', 'mean', 'min']}).reset_index()
@@ -72,6 +73,31 @@ UMI_Media_Diaria.columns = ['Data/Hora', 'UMI_Media_Diaria', 'UMI_Maxima_Diaria'
 
 granja = granja.merge(UMI_Media_Diaria, on= 'Data/Hora', how='left')
 
+# Calcular a Umidade Semanal
+
+UMI_Media_Semanal = granja.groupby('Semana').agg({'Umidade_Media':['mean','max', 'min']}).reset_index()
+
+# Renomear as colunas
+
+UMI_Media_Semanal.columns=['Semana', 'UMI_Media_Semanal', 'UMI_Maxima_Semanal', 'UMI_Minima_Semanal']
+
+# Add as colunas métricas ao dataframe granja
+
+granja = granja.merge(UMI_Media_Semanal, on='Semana', how='left')
+
+# Formatar colunas e deixar com apenas duas casas decimais
+
+granja['UMI_Media_Semanal'] = granja['UMI_Media_Semanal'].apply(lambda x: "{:.2f}".format(x))
+
+
+# Organizar as colunas
+nova_ordem=['Data/Hora', 'Semana', 'Idade em Dias', 'Temperatura_Desejada', 'Temperatura_Media', \
+     'TP_Media_Diaria', 'TP_Maxima_Diaria', 'TP_Minima_Diaria', 'TP_Media_Semanal', \
+     'TP_Maxima_Semanal', 'TP_Minima_Semanal','Umidade_Desejada', 'Umidade_Media', \
+     'UMI_Media_Diaria', 'UMI_Maxima_Diaria', 'UMI_Minima_Diaria','UMI_Media_Semanal', \
+     'UMI_Maxima_Semanal', 'UMI_Minima_Semanal','Pressao_Desejada']
+
+granja = granja.reindex(columns=nova_ordem)
 
 ########################################################################################################################################################################
 
@@ -83,21 +109,33 @@ app = dash.Dash(__name__)
 # Layout do aplicativo
 app.layout = html.Div([
     # Título do dashboard
-    html.H1('Dashboard de Temperatura e Umidade no Aviário'),
+    html.H1('Comparativo de Temperatura  no Aviário'),
     
     # Gráfico de temperatura
-    html.H2('Gráfico de Temperatura'),
+    html.H2('Temperatura Desejada x Temperatura Média Diária'),
     dcc.Graph(figure=go.Figure([
-        go.Scatter(x=granja['Idade de Vida'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
-        go.Scatter(x=granja['Idade de Vida'], y=granja['TP_Media_Diaria'], name='Temperatura Média Diária')
+        go.Scatter(x=granja['Data/Hora'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
+        go.Scatter(x=granja['Data/Hora'], y=granja['TP_Media_Diaria'], name='Temperatura Média Diária')
     ])),
-    
-    # Gráfico de umidade
-    html.H2('Gráfico de Umidade'),
+    # Gráfico de temperatura
+    html.H2('Temperatura Desejada x Temperatura Maxima Diária'),
     dcc.Graph(figure=go.Figure([
-        go.Scatter(x=granja['Idade de Vida'], y=granja['Umidade_Desejada'], name='Umidade Desejada'),
-        go.Scatter(x=granja['Idade de Vida'], y=granja['Umidade_Media'], name='Umidade Média')
+        go.Scatter(x=granja['Data/Hora'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
+        go.Scatter(x=granja['Data/Hora'], y=granja['TP_Maxima_Diaria'], name='Temperatura Maxima Diária')
+    ])),
+    # Gráfico de umidade
+    html.H2('Temperatura Desejada x Temperatura Minima Diária'),
+    dcc.Graph(figure=go.Figure([
+        go.Scatter(x=granja['Data/Hora'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
+        go.Scatter(x=granja['Data/Hora'], y=granja['TP_Minima_Diaria'], name='Temperatura Minima Diária')
+    ])),
+    # Comparativo matriz
+    html.H2('Temperatura Desejada x Temperatura Minima Diária'),
+    dcc.Graph(figure=go.Figure([
+        go.Scatter(x=matriz['Idade em Dias'], y=matriz['Temperatura Media'], name='Temperatura Media-Matriz'),
+        go.Scatter(x=granja['Idade em Dias'], y=granja['TP_Media_Diaria'], name='TP_Media_Diaria-Granja')
     ]))
+
 ])
 
 # Executar o aplicativo Dash
