@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import streamlit as st
 import dash_table
 import dash
 import dash_core_components as dcc
@@ -20,8 +19,6 @@ granja = granja.fillna(0)
 
 # Excluir colunas que somente tem o valor = 0 / Atualemente com 108 colunas
 colunas_zero = granja.columns[(granja == 0).all()]
-
-# Excluir as colunas identificadas
 granja = granja.drop(columns=colunas_zero)
 
 # Excluir colunas que contenham somente valores = 
@@ -29,66 +26,51 @@ colunas_igual_1 = granja.columns[(granja == 1).any()]
 granja = granja.drop(columns=colunas_igual_1)
 
 # Excluir Colunas que não serão utilizadas
-
 colunas_inuteis = ['T1','T3','T4','T5','TU1_Temperatura','TU1_Umidade','AD1','AD2']
 granja = granja.drop(columns=colunas_inuteis)
 
 # Converter a coluna data para o tipo datetime
-granja['Data'] = pd.to_datetime(granja['Data'])
+granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'], format='%Y-%m-%d')
 
-# Remover a hora da coluna
-granja['Data'] = granja['Data'].dt.date
 
-# Encontrar a data mínima
-data_minima = granja['Data'].min()
-
-# Calcular a idade de vida em dias
-granja['Idade de Vida'] = (granja['Data'] - data_minima).dt.days
-
-# Preencher a coluna 'semana' com base nas datas
-granja['Semana'] = (granja['Data'] - data_minima).apply(lambda x: divmod(x.days,7)[0])
-
+# Criar coluna chamada semana
+primeira_data = granja['Data/Hora'].iloc[0]
+granja['Semana'] = ((granja['Data/Hora'] - primeira_data).dt.days // 7).astype(int)
 
 
 ########################################################################################################################################################################
 
-
-# Calcular a temperatura média por semana
-TP_Media_Semanal = granja.groupby('Semana')['Temperatura_Media'].mean().apply(lambda x: int(x))
-TP_Maxima_Semanal = granja.groupby('Semana')['Temperatura_Media'].max().apply(lambda x: int(x))
-TP_Minima_Semanal = granja.groupby('Semana')['Temperatura_Media'].min().apply(lambda x: int(x))
+# Calcular a temperatura por Dia
+TP_Media_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].mean().apply(lambda x: int(x))
+TP_Maxima_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].max().apply(lambda x: int(x))
+TP_Minima_Diaria = granja.groupby('Data/Hora')['Temperatura_Media'].min().apply(lambda x: int(x))
 
 # Add média semanal ao dataframe
 
-granja['TP_Media_Semanal'] = granja['Idade de Vida'].map(TP_Media_Semanal)
-granja['TP_Maxima_Semanal'] = granja['Idade de Vida'].map(TP_Maxima_Semanal)
-granja['TP_Minima_Semanal'] = granja['Idade de Vida'].map(TP_Minima_Semanal)
+granja['TP_Media_Diaria'] = granja['Data/Hora'].map(TP_Media_Diaria)
+granja['TP_Maxima_Diaria'] = granja['Data/Hora'].map(TP_Maxima_Diaria)
+granja['TP_Minima_Diaria'] = granja['Data/Hora'].map(TP_Minima_Diaria)
 
-# Calcular temperatura media diária
+# Calcular temperatura media Semanal
+TP_Media_Semanal = granja.groupby('Semana').agg({'Temperatura_Media': ['max', 'mean', 'min']}).reset_index()
 
-TP_Media_Diaria = granja.groupby('Idade de Vida')['Temperatura_Media'].mean().apply(lambda x: int(x))
-TP_Maxima_Diaria = granja.groupby('Idade de Vida')['Temperatura_Media'].max().apply(lambda x: int(x))
-TP_Minima_Diaria = granja.groupby('Idade de Vida')['Temperatura_Media'].min().apply(lambda x: int(x))
+# Renomear as colunas
+TP_Media_Semanal.columns = ['Semana', 'TP_Media_Semanal','TP_Maxima_Semanal', 'TP_Minima_Semanal']
 
-# Add temperatura media no dataframe
-granja['TP_Media_Diaria'] = granja['Idade de Vida'].map(TP_Media_Diaria)
-granja['TP_Maxima_Diaria'] = granja['Idade de Vida'].map(TP_Maxima_Diaria)
-granja['TP_Minima_Diaria'] = granja['Idade de Vida'].map(TP_Minima_Diaria)
-
-# Transformar a coluna Temperatura desejada em inteiro
-granja['Temperatura_Desejada'] = granja['Temperatura_Desejada'].astype(int)
-
-granja['Umidade_Desejada'].value_counts()
+# Mesclar as estatísticas com o DataFrame "granja"
+granja = granja.merge(TP_Media_Semanal, on='Semana', how='left')
 
 ########################################################################################################################################################################
 
-# Calcular Umidade média semanal
-Umidade_Media_Semanal = granja.groupby('Semana')['Umidade_Media'].mean().reset_index()
-Umidade_Maxima_Semanal = granja.groupby('Semana')['Umidade_Media'].mean().reset_index()
-Umidade_Minima_Semanal = granja.groupby('Semana')['Umidade_Media'].mean().reset_index()
+# Calcular Umidade média Diária
+UMI_Media_Diaria = granja.groupby('Data/Hora').agg({'Umidade_Media': ['max', 'min', 'mean']}).reset_index()
 
-# Add Umidade media, minima e maxima semanal ao data frame
+# Renomear as colunas
+UMI_Media_Diaria.columns = ['Data/Hora', 'UMI_Media_Diaria', 'UMI_Maxima_Diaria', 'UMI_Minima_Diaria']
 
+# Mesclar as Estatisticas ao Dataframe
+
+granja = granja.merge(UMI_Media_Diaria, on= 'Data/Hora', how='left')
 
 
 ########################################################################################################################################################################
