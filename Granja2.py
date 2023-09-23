@@ -24,7 +24,7 @@ granja = granja.drop(columns=colunas_igual_1)
 
 # Excluir Colunas que não serão utilizadas
 colunas_inuteis = ['T1','T3','T4','T5','TU1_Temperatura','TU1_Umidade','AD1','AD2']
-granja = granja.drop(columns=colunas_inuteis, )
+granja = granja.drop(columns=colunas_inuteis )
 
 # Converter a coluna data para o tipo datetime
 granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'], format='%Y-%m-%d')
@@ -33,7 +33,7 @@ granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'], format='%Y-%m-%d')
 data_inicial = granja['Data/Hora'].min()
 
 # Criar a nova coluna com a contagem dos dias
-granja['Idade em Dias'] = (granja['Data/Hora'] - data_inicial).dt.days + 1
+granja['Idade_em_Dias'] = (granja['Data/Hora'] - data_inicial).dt.days
 granja.columns
 
 # Criar coluna chamada semana
@@ -99,6 +99,11 @@ nova_ordem=['Data/Hora', 'Semana', 'Idade em Dias', 'Temperatura_Desejada', 'Tem
 
 granja = granja.reindex(columns=nova_ordem)
 
+# Salvar o Arquivo
+
+granja.to_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/smaai_leituras_atualizado.xlsx')
+
+
 ########################################################################################################################################################################
 
 # Análise Gráfica dos dados Temperatura e Umidade
@@ -114,8 +119,8 @@ app.layout = html.Div([
     # Gráfico de temperatura
     html.H2('Temperatura Desejada x Temperatura Média Diária'),
     dcc.Graph(figure=go.Figure([
-        go.Scatter(x=granja['Data/Hora'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada'),
-        go.Scatter(x=granja['Data/Hora'], y=granja['TP_Media_Diaria'], name='Temperatura Média Diária')
+        go.Bar(x=granja['Data/Hora'], y=granja['Temperatura_Desejada'], name='Temperatura Desejada', marker=dict(color='blue')),
+        go.Bar(x=granja['Data/Hora'], y=granja['TP_Media_Diaria'], name='Temperatura Média Diária', marker=dict(color='red'))
     ])),
     # Gráfico de temperatura
     html.H2('Temperatura Desejada x Temperatura Maxima Diária'),
@@ -149,6 +154,48 @@ if __name__ == '__main__':
 ########################################################################################################################################################################
 
 
-# Salvar o Arquivo
+# Supondo que você tenha um DataFrame chamado 'granja' com as colunas 'Data/Hora' e 'Temperatura_Desejada'
+granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
 
-#granja.to_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Setembro/Aviário-2/smaai_leituras_atualizado.xlsx')
+# Renomear coluna
+granja = granja.rename(columns={'Idade em Dias': 'Idade_em_Dias'})
+
+# Idade_em_Dias comecar em 0
+data_inicial = granja['Data/Hora'].min()
+granja['Idade_em_Dias'].replace((granja['Data/Hora'] - data_inicial).dt.days)
+granja.columns
+
+# Converter a coluna 'Data/Hora' em um objeto datetime
+granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
+#excluir a hora da coluna data
+
+granja['Data'] = granja['Data/Hora'].dt.date
+
+st.title('Análise de Temperatura no Aviário')
+
+st.write("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
+
+
+# Extrair os valores da coluna 'Temperatura_Desejada'
+temperatura_desejada = granja['Temperatura_Desejada'].values
+
+# Criar o slider para selecionar a data/hora
+data_hora_selecionada = st.slider('Selecione a Data/Hora', min_value=granja['Data'].min(), max_value=granja['Data'].max())
+
+# Filtrar o DataFrame com base na data/hora selecionada
+dados_selecionados = granja[granja['Data'] == data_hora_selecionada]
+
+# Obter os valores das temperaturas mínima, máxima e média para a data/hora selecionada
+temperatura_minima = dados_selecionados['TP_Minima_Diaria'].min()
+temperatura_maxima = dados_selecionados['TP_Maxima_Diaria'].max()
+temperatura_media = round(dados_selecionados['TP_Media_Diaria'].mean(), 2)
+
+# Arredondar a temperatura média para 2 casas decimais
+temperatura_media_formatada = format(temperatura_media, '.2f')
+
+# Calcular a diferença entre a temperatura mínima e desejada
+delta_minima = temperatura_minima - temperatura_desejada[0]
+
+# Exckuir colunas
+colunas_excluir = ['Unnamed: 0','Data']
+granja = granja.drop(columns=colunas_excluir)
