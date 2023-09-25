@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import datetime as dt
 import matplotlib.dates as mdates
 import mplcursors
+import plotly.express as px
 
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Pico de Temperatura", "Analise por Perído"]
@@ -77,31 +78,28 @@ if subpagina_selecionada == "Análise de Temperatura":
 
     st.markdown("<h2 style='text-align: center;'>Comparativo</h2>", unsafe_allow_html=True)
 
-    if not dados_selecionados.empty:
-        # Obter as datas das data/hora
-        datas = dados_selecionados['Data/Hora']
-
-        # Obter os valores das temperaturas
-        temperaturas_medias = dados_selecionados['Temperatura_Media']
-        temperatura_desejada = dados_selecionados['Temperatura_Desejada']
-
-        # Configurar o gráfico
-        plt.figure(figsize=(10, 6))
-        plt.plot(datas, temperaturas_medias, label='Temperatura')
-        plt.plot(datas, temperatura_desejada, label='Temperatura Desejada')
-        plt.xlabel('Data/Hora')
-        plt.ylabel('Temperatura')
-        plt.title('')
-        plt.legend()
-        plt.xticks(rotation=45)
-
-        # Adicionar interatividade para exibir os valores no mouse hover
-        cursor = mplcursors.cursor(hover=True)
-        cursor.connect("add", lambda sel: sel.annotation.set_text(sel.artist.get_ydata()[sel.target.index]))
 
 
-        # Exibir o gráfico no Streamlit
-        st.pyplot(plt)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Media'], mode='lines', name='Temperatura'))
+    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Desejada'))
+    fig.update_layout(
+        title='',
+        xaxis_title='Data/Hora',
+        yaxis_title='Temperatura',
+        width=800,  # Definir a largura da janela do gráfico
+        height=600,  # Definir a altura da janela do gráfico
+        legend=dict(
+            orientation="h",  # Orientação horizontal
+            yanchor="top",  # Âncora superior
+            y=1.1  # Posição vertical
+        )
+    )
+    fig.update_xaxes(tickangle=45)
+
+# Exibir o gráfico interativo no Streamlit
+    st.plotly_chart(fig)
+# Exibir o gráfico interativo no Streamlit
 
 
 elif subpagina_selecionada == "Pico de Temperatura":
@@ -121,74 +119,32 @@ elif subpagina_selecionada == "Pico de Temperatura":
         # Encontrar os horários de maiores picos na temperatura
     horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
     horarios_maiores_picos.value_counts()
-        # Configurar o gráfico
-    plt.figure(figsize=(10, 6))
-    plt.plot(datas, temperaturas_medias, label='Temperatura Média')
-    plt.plot(datas, temperatura_desejada, label='Temperatura Desejada')
-    plt.scatter(horarios_maiores_picos, temperaturas_medias[temperaturas_medias > temperatura_desejada], color='red', label='Picos de Temperatura')
-    plt.xlabel('Data/Hora')
-    plt.ylabel('Temperatura')
-    plt.title('')
-    plt.legend()
-        # Exibir o gráfico no Streamlit
-    st.pyplot(plt)
+        
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=datas, y=temperaturas_medias, mode='lines', name='Temperatura Média'))
+    fig.add_trace(go.Scatter(x=datas, y=temperatura_desejada, mode='lines', name='Temperatura Desejada'))
+    fig.add_trace(go.Scatter(x=horarios_maiores_picos, y=temperaturas_medias[temperaturas_medias > temperatura_desejada], mode='markers', marker=dict(color='red'), name='Picos de Temperatura'))
+    fig.update_layout(
+        title='',
+        xaxis_title='Data/Hora',
+        yaxis_title='Temperatura',
+        width=1200,  # Definir a largura da janela do gráfico
+        height=1000,  # Definir a altura da janela do gráfico
+        legend=dict(
+            orientation="h",  # Orientação horizontal
+            yanchor="top",  # Âncora superior
+            y=1.1  # Posição vertical
+        )
+)
+    fig.update_xaxes(tickangle=45)
 
-
-
-elif subpagina_selecionada == "Analise por Perído":
-    # Conteúdo de outra página de temperatura
-    st.title('')
-
-    st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
-
-    if 'granja' not in locals():
-        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
-    # Arredondar os horários para períodos de 3 horas
-    granja['Periodo_Horas'] = granja['Data/Hora'].dt.floor('3H')
-
-    # Obter lista de datas
-    datas = granja['Data/Hora'].dt.date.unique()
-
-    # Converter as datas para string no formato "YYYY-MM-DD"
-    datas_str = [str(data) for data in datas]
-
-    # Selecionar a data
-    selected_data_str = st.selectbox('Selecione a data:', datas_str)
-
-    # Converter a data selecionada para o formato de data
-    selected_data = pd.to_datetime(selected_data_str)
-
-    # Filtrar os dados para a data selecionada
-    dados_data = granja[granja['Data/Hora'].dt.date == selected_data.date()]
-
-    # Obter o limite de temperatura desejado
-    limite_temperatura = dados_data['Temperatura_Desejada'].iloc[0]  # Substitua pelo limite desejado
-
-    # Filtrar os horários em que a temperatura ultrapassou o limite desejado
-    horarios_ultrapassagem = dados_data[dados_data['Temperatura_Media'] > limite_temperatura]['Data/Hora']
-
-    # Agrupar os horários por período de 3 horas
-    horarios_agrupados = horarios_ultrapassagem.dt.floor('3H').dt.time
-
-    # Contar o número de picos de temperatura em cada período de 3 horas
-    contagem_picos = horarios_agrupados.value_counts()
-
-    # Exibir o intervalo de horários com base no período de 3 horas
-    st.write("Intervalo de Horários com Ultrapassagem do Limite de Temperatura:")
-    for horario, count in contagem_picos.items():
-        st.write(f"{horario} - {count} pico(s)")
-
-    # Exibir a parte do dia com base no horário
-    parte_dia = horarios_agrupados.apply(lambda x: "Madrugada" if 0 <= x.hour < 6 else "Manhã" if 6 <= x.hour < 12 else "Tarde" if 12 <= x.hour < 18 else "Noite")
-    parte_dia_contagem = parte_dia.value_counts()
-
-    # Exibir a contagem de picos por parte do dia
-    st.write("Contagem de Picos de Temperatura por Parte do Dia:")
-    for parte, count in parte_dia_contagem.items():
-        st.write(f"{parte}: {count} pico(s)")
-
-
-
+# Adicionar interatividade para exibir os valores no hover
+    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Temperatura: %{y}')
+        # Exibir o gráfico interativo no Streamlit
+    st.plotly_chart(fig)
+        
+        
+    
 
     # Converter a coluna "Data/hora" para o tipo datetime
     granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
@@ -247,4 +203,82 @@ elif subpagina_selecionada == "Analise por Perído":
     # Exibir a tabela de resultados ordenada
     print(resultados)
     # Exibir a tabela de resultados ordenada
-    st.write(resultados)
+    #st.write(resultados)
+
+ # Criar o gráfico de barras interativo usando o Plotly
+    fig_bar = px.bar(resultados, x='Período', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
+
+    # Exibir o gráfico de barras e o gráfico de linha no Streamlit
+    st.plotly_chart(fig_bar)
+
+
+
+
+elif subpagina_selecionada == "Analise por Perído":
+    # Conteúdo de outra página de temperatura
+    st.title('')
+
+    st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
+
+    if 'granja' not in locals():
+        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
+    # Arredondar os horários para períodos de 3 horas
+    granja['Periodo_Horas'] = granja['Data/Hora'].dt.floor('3H')
+
+    # Obter lista de datas
+    datas = granja['Data/Hora'].dt.date.unique()
+
+    # Converter as datas para string no formato "YYYY-MM-DD"
+    datas_str = [str(data) for data in datas]
+
+    # Selecionar a data
+    selected_data_str = st.selectbox('Selecione a data:', datas_str)
+
+    # Converter a data selecionada para o formato de data
+    selected_data = pd.to_datetime(selected_data_str)
+
+    # Filtrar os dados para a data selecionada
+    dados_data = granja[granja['Data/Hora'].dt.date == selected_data.date()]
+
+    # Obter o limite de temperatura desejado
+    limite_temperatura = dados_data['Temperatura_Desejada'].iloc[0]  # Substitua pelo limite desejado
+
+    # Filtrar os horários em que a temperatura ultrapassou o limite desejado
+    horarios_ultrapassagem = dados_data[dados_data['Temperatura_Media'] > limite_temperatura]['Data/Hora']
+
+    # Agrupar os horários por período de 3 horas
+    horarios_agrupados = horarios_ultrapassagem.dt.floor('3H').dt.time
+
+    # Contar o número de picos de temperatura em cada período de 3 horas
+    contagem_picos = horarios_agrupados.value_counts()
+
+    # Exibir o intervalo de horários com base no período de 3 horas
+    st.write("Intervalo de Horários com Ultrapassagem do Limite de Temperatura:")
+    for horario, count in contagem_picos.items():
+        st.write(f"{horario} - {count} pico(s)")
+
+    # Exibir a parte do dia com base no horário
+    parte_dia = horarios_agrupados.apply(lambda x: "Madrugada" if 0 <= x.hour < 6 else "Manhã" if 6 <= x.hour < 12 else "Tarde" if 12 <= x.hour < 18 else "Noite")
+    parte_dia_contagem = parte_dia.value_counts()
+
+    # Exibir a contagem de picos por parte do dia
+    st.write("Contagem de Picos de Temperatura por Parte do Dia:")
+    for parte, count in parte_dia_contagem.items():
+        st.write(f"{parte}: {count} pico(s)")
+
+        # Verificar se há dados disponíveis para a parte do dia
+        if not parte_dia_contagem.empty:
+            # Criar um gráfico de barras para a contagem de picos por parte do dia
+            plt.figure(figsize=(8, 6))
+            parte_dia_contagem.plot(kind='bar')
+            plt.xlabel('Parte do Dia')
+            plt.ylabel('Contagem de Picos')
+            plt.title('Contagem de Picos de Temperatura por Parte do Dia')
+
+            # Exibir o gráfico de barras no Streamlit
+            st.pyplot(plt)
+        else:
+            st.write("Não há dados disponíveis para a parte do dia selecionada.")
+    else:
+        st.write("Não há dados disponíveis para a data selecionada.")
+
