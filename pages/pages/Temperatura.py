@@ -41,11 +41,14 @@ if subpagina_selecionada == "Análise de Temperatura":
     temperatura_minima = round(dados_selecionados['TP_Minima_Diaria'].min(),2)
     temperatura_maxima = round(dados_selecionados['TP_Maxima_Diaria'].max(),2)
     temperatura_media = round(dados_selecionados['TP_Media_Diaria'].mean(), 2)
+    # Obter o valor da temperatura desejada do DataFrame
+    temperatura_ideal = float(dados_selecionados['Temperatura_Desejada'].iloc[0])
 
     # Calcular a diferença entre a temperatura mínima e desejada
     delta_minima = temperatura_minima - temperatura_desejada[0]
     delta_maxima = temperatura_maxima - temperatura_desejada[0]
     delta_media =  temperatura_media - temperatura_desejada [0]
+    
 
     # Exckuir colunas
     colunas_excluir = ['Unnamed: 0','Data']
@@ -53,16 +56,21 @@ if subpagina_selecionada == "Análise de Temperatura":
 
 
     # Criar as colunas
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric(label="Temperatura Mínima", value=format(temperatura_minima, '.2f'), delta=format(delta_minima, '.2f'), delta_color="inverse")
+        st.metric(label="Temperatura Ideal", value=format(temperatura_ideal, '.2f'))
 
     with col2:
-        st.metric(label="Temperatura Máxima", value=format(temperatura_maxima, '.2f'),delta=format(delta_maxima, '.2f'), delta_color="inverse")
-
+        st.metric(label="Temperatura Mínima", value=format(temperatura_minima, '.2f'), delta=format(delta_minima, '.2f'), delta_color="off")
+        
     with col3:
-        st.metric(label="Temperatura Média", value=format(temperatura_media, '.2f'), delta=format(delta_media, '.2f'), delta_color="inverse")
+        st.metric(label="Temperatura Média", value=format(temperatura_media, '.2f'), delta=format(delta_media, '.2f'), delta_color="off")
+
+    with col4:
+       st.metric(label="Temperatura Máxima", value=format(temperatura_maxima, '.2f'),delta=format(delta_maxima, '.2f'), delta_color="off")
+
+
     
     # Gráfico com as temperaturas
     fig = go.Figure()
