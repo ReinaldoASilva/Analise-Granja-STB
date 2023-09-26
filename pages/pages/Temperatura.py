@@ -1,11 +1,7 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import datetime as dt
-import matplotlib.dates as mdates
-import mplcursors
 import plotly.express as px
 
 # Definindo as opções do submenu de Temperatura
