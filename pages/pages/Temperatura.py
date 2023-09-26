@@ -9,30 +9,28 @@ import mplcursors
 import plotly.express as px
 
 # Definindo as opções do submenu de Temperatura
-submenu_temperatura = ["Análise de Temperatura", "Pico de Temperatura", "Analise por Perído"]
+submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
+
+#################################################################### PÁGINA Análise de Temperatura ####################################################################
 
 # Lógica para exibir conteúdo com base na subpágina selecionada
 if subpagina_selecionada == "Análise de Temperatura":
-    # Conteúdo da página de temperatura
-    st.title("")
-    # ...
-
-    # Supondo que você tenha um DataFrame chamado 'granja' com as colunas 'Data/Hora' e 'Temperatura_Desejada'
+   
+    # Criando um dataframe
     granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
-
 
     # Converter a coluna 'Data/Hora' em um objeto datetime
     granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
 
-    #excluir a hora da coluna data
-
+    # Excluir a hora da coluna data
     granja['Data'] = granja['Data/Hora'].dt.date
 
+    # Título
     st.title('Análise de Temperatura no Aviário')
 
+    # Texto
     st.write("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
-
 
     # Extrair os valores da coluna 'Temperatura_Desejada'
     temperatura_desejada = granja['Temperatura_Desejada'].values
@@ -44,15 +42,14 @@ if subpagina_selecionada == "Análise de Temperatura":
     dados_selecionados = granja[granja['Data'] == data_hora_selecionada]
 
     # Obter os valores das temperaturas mínima, máxima e média para a data/hora selecionada
-    temperatura_minima = dados_selecionados['TP_Minima_Diaria'].min()
-    temperatura_maxima = dados_selecionados['TP_Maxima_Diaria'].max()
+    temperatura_minima = round(dados_selecionados['TP_Minima_Diaria'].min(),2)
+    temperatura_maxima = round(dados_selecionados['TP_Maxima_Diaria'].max(),2)
     temperatura_media = round(dados_selecionados['TP_Media_Diaria'].mean(), 2)
-
-    # Arredondar a temperatura média para 2 casas decimais
-    temperatura_media_formatada = format(temperatura_media, '.2f')
 
     # Calcular a diferença entre a temperatura mínima e desejada
     delta_minima = temperatura_minima - temperatura_desejada[0]
+    delta_maxima = temperatura_maxima - temperatura_desejada[0]
+    delta_media =  temperatura_media - temperatura_desejada [0]
 
     # Exckuir colunas
     colunas_excluir = ['Unnamed: 0','Data']
@@ -62,24 +59,16 @@ if subpagina_selecionada == "Análise de Temperatura":
     # Criar as colunas
     col1, col2, col3 = st.columns(3)
 
-    # Aplicando o formato aos modelos de temperatura
-    ##st.metric(label="Temperatura Mínima", value=temperatura_minima, delta=delta_minima, delta_color="inverse")
-
     with col1:
         st.metric(label="Temperatura Mínima", value=format(temperatura_minima, '.2f'), delta=format(delta_minima, '.2f'), delta_color="inverse")
 
     with col2:
-        st.metric(label="Temperatura Máxima", value=format(temperatura_maxima, '.2f'),delta=format(temperatura_maxima - temperatura_desejada[0], '.2f'), delta_color="inverse")
+        st.metric(label="Temperatura Máxima", value=format(temperatura_maxima, '.2f'),delta=format(delta_maxima, '.2f'), delta_color="inverse")
 
     with col3:
-        st.metric(label="Temperatura Média", value=format(temperatura_media, '.2f'), delta=format(temperatura_media - temperatura_desejada[0], '.2f'), delta_color="inverse")
-    # Exibir a temperatura média em um texto simples formatado manualmente
-    # Criar o slider para selecionar a data/hora
-
-    st.markdown("<h2 style='text-align: center;'>Comparativo</h2>", unsafe_allow_html=True)
-
-
-
+        st.metric(label="Temperatura Média", value=format(temperatura_media, '.2f'), delta=format(delta_media, '.2f'), delta_color="inverse")
+    
+    # Gráfico com as temperaturas
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Media'], mode='lines', name='Temperatura'))
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Desejada'))
@@ -101,127 +90,19 @@ if subpagina_selecionada == "Análise de Temperatura":
     st.plotly_chart(fig)
 # Exibir o gráfico interativo no Streamlit
 
-
-elif subpagina_selecionada == "Pico de Temperatura":
-        # Conteúdo de outra página de temperatura
-    st.title("")
-            
-    st.markdown("<h2 style='text-align: center;'>Picos de Temperatura</h2>", unsafe_allow_html=True)
-
-    if 'granja' not in locals():
-        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
-
-# Filtrar os dados para obter as temperaturas médias e desejadas
-    temperaturas_medias = granja['Temperatura_Media']
-    temperatura_desejada = granja['Temperatura_Desejada']
-    datas = granja['Data/Hora']
-
-        # Encontrar os horários de maiores picos na temperatura
-    horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
-    horarios_maiores_picos.value_counts()
-        
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=datas, y=temperaturas_medias, mode='lines', name='Temperatura Média'))
-    fig.add_trace(go.Scatter(x=datas, y=temperatura_desejada, mode='lines', name='Temperatura Desejada'))
-    fig.add_trace(go.Scatter(x=horarios_maiores_picos, y=temperaturas_medias[temperaturas_medias > temperatura_desejada], mode='markers', marker=dict(color='red'), name='Picos de Temperatura'))
-    fig.update_layout(
-        title='',
-        xaxis_title='Data/Hora',
-        yaxis_title='Temperatura',
-        width=1200,  # Definir a largura da janela do gráfico
-        height=1000,  # Definir a altura da janela do gráfico
-        legend=dict(
-            orientation="h",  # Orientação horizontal
-            yanchor="top",  # Âncora superior
-            y=1.1  # Posição vertical
-        )
-)
-    fig.update_xaxes(tickangle=45)
-
-# Adicionar interatividade para exibir os valores no hover
-    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Temperatura: %{y}')
-        # Exibir o gráfico interativo no Streamlit
-    st.plotly_chart(fig)
-        
-        
-    
-
-    # Converter a coluna "Data/hora" para o tipo datetime
-    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
-
-    # Definir o período da madrugada
-    inicio_madrugada = pd.Timestamp("00:00:00")
-    fim_madrugada = pd.Timestamp("05:59:59")
-
-    inicio_manha = pd.Timestamp("06:00:00")
-    fim_manha = pd.Timestamp("11:59:59")
-
-    inicio_tarde = pd.Timestamp("12:00:00")
-    fim_tarde = pd.Timestamp("17:59:59")
-
-    inicio_noite = pd.Timestamp("18:00:00")
-    fim_noite = pd.Timestamp("23:59:59")
-
-
-    # Filtrar os dados dentro do período da madrugada
-    dados_madrugada = granja[(granja['Data/Hora'].dt.time >= inicio_madrugada.time()) & (granja['Data/Hora'].dt.time <= fim_madrugada.time())]
-
-    dados_manha = granja[(granja['Data/Hora'].dt.time >= inicio_manha.time()) & (granja['Data/Hora'].dt.time <= fim_manha.time())]
-
-    dados_tarde = granja[(granja['Data/Hora'].dt.time >= inicio_tarde.time()) & (granja['Data/Hora'].dt.time <= fim_tarde.time())]
-
-    dados_noite = granja[(granja['Data/Hora'].dt.time >= inicio_noite.time()) & (granja['Data/Hora'].dt.time <= fim_noite.time())]
-
-    # Calcular a quantidade de picos no período da madrugada
-    quantidade_picos_madrugada = dados_madrugada['Temperatura_Desejada'].count()
-
-    quantidade_picos_manha = dados_manha['Temperatura_Desejada'].count()
-
-    quantidade_picos_tarde = dados_tarde['Temperatura_Desejada'].count()
-
-    quantidade_picos_noite = dados_noite['Temperatura_Desejada'].count()
-
-
-
-    # Exibir a quantidade de picos no período da madrugada
-    print(f"A quantidade de picos no período da madrugada é: {quantidade_picos_madrugada}")
-    print(f"A quantidade de picos no período da manhã é: {quantidade_picos_manha}")
-    print(f"A quantidade de picos no período da tarde é: {quantidade_picos_tarde}")
-    print(f"A quantidade de picos no período da noite é: {quantidade_picos_noite}")
-
-
-
-    # Criar um DataFrame com os resultados
-    resultados = pd.DataFrame({
-        'Período': ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
-        'Quantidade de Picos': [quantidade_picos_madrugada, quantidade_picos_manha, quantidade_picos_tarde, quantidade_picos_noite]
-    })
-
-    # Ordenar a tabela em ordem decrescente pela coluna 'Quantidade de Picos'
-    resultados = resultados.sort_values(by='Quantidade de Picos', ascending=False)
-
-    # Exibir a tabela de resultados ordenada
-    print(resultados)
-    # Exibir a tabela de resultados ordenada
-    #st.write(resultados)
-
- # Criar o gráfico de barras interativo usando o Plotly
-    fig_bar = px.bar(resultados, x='Período', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
-
-    # Exibir o gráfico de barras e o gráfico de linha no Streamlit
-    st.plotly_chart(fig_bar)
-
+#################################################################### PÁGINA ANÁLISE POR PERÍODO ####################################################################
 
 
 
 elif subpagina_selecionada == "Analise por Perído":
-    # Conteúdo de outra página de temperatura
-    st.title('')
-
+   
+   # Título
     st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
-
+    
+    # Se o gráfico não tiver dados na abertura reconhecer esse caminho
     if 'granja' not in locals():
         granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
+    
     # Arredondar os horários para períodos de 3 horas
     granja['Periodo_Horas'] = granja['Data/Hora'].dt.floor('3H')
 
@@ -267,18 +148,206 @@ elif subpagina_selecionada == "Analise por Perído":
         st.write(f"{parte}: {count} pico(s)")
 
         # Verificar se há dados disponíveis para a parte do dia
-        if not parte_dia_contagem.empty:
-            # Criar um gráfico de barras para a contagem de picos por parte do dia
-            plt.figure(figsize=(8, 6))
-            parte_dia_contagem.plot(kind='bar')
-            plt.xlabel('Parte do Dia')
-            plt.ylabel('Contagem de Picos')
-            plt.title('Contagem de Picos de Temperatura por Parte do Dia')
+    if not parte_dia_contagem.empty:
 
-            # Exibir o gráfico de barras no Streamlit
-            st.pyplot(plt)
-        else:
-            st.write("Não há dados disponíveis para a parte do dia selecionada.")
+            # Criar um gráfico de barras interativo para a contagem de picos por parte do dia
+            fig = px.bar(parte_dia_contagem, x=parte_dia_contagem.index, y=parte_dia_contagem.values, labels={'x': 'Parte do Dia', 'y': 'Contagem de Picos'}, title='')
+            fig.update_layout(xaxis={'categoryorder': 'array', 'categoryarray': ['Madrugada', 'Manhã', 'Tarde', 'Noite']})  # Ordenar as categorias corretamente
+
+            # Exibir o gráfico de barras interativo no Streamlit
+            st.plotly_chart(fig)
+       
     else:
         st.write("Não há dados disponíveis para a data selecionada.")
+
+
+#################################################################### PÁGINA PICOS DE TEMPERATURA ####################################################################
+
+
+elif subpagina_selecionada == "Pico de Temperatura":
+
+    # Título
+    st.markdown("<h2 style='text-align: center;'>Picos de Temperatura</h2>", unsafe_allow_html=True)
+
+    # Se o gráfico não tiver dados na abertura reconhecer esse caminho
+    if 'granja' not in locals():
+        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
+
+    #Filtrar os dados para obter as temperaturas médias e desejadas
+    temperaturas_medias = granja['Temperatura_Media']
+    temperatura_desejada = granja['Temperatura_Desejada']
+    datas = granja['Data/Hora']
+
+    # Encontrar os horários de maiores picos na temperatura
+    horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
+
+    # Obter as datas únicas com picos de temperatura
+    dias_picos_temperatura = horarios_maiores_picos.dt.date.unique()
+
+    # Calcular a quantidade de dias com picos de temperatura
+    quantidade_dias_picos = len(dias_picos_temperatura)
+
+    # Calcular a quantidade de dias com picos de temperatura
+    quantidade_dias_picos = len(dias_picos_temperatura)
+
+
+    # Determinar quantos dias seguidos de pico de temperatura ocorreram
+    dias_seguidos_picos = 0
+    for i in range(len(dias_picos_temperatura) - 1):
+        data_atual = dias_picos_temperatura[i]
+        data_seguinte = dias_picos_temperatura[i + 1]
+        if (data_seguinte - data_atual).days == 1:
+            dias_seguidos_picos += 1
+
+    # Exibir a quantidade de dias seguidos de pico de temperatura
+    #st.write(f"Quantidade de dias seguidos de pico de temperatura: {dias_seguidos_picos}")
+
+    # Criar colunas
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        # Exibir a quantidade de dias com picos de temperatura
+        st.metric(label="Dias com pico", value=quantidade_dias_picos)
+
+    with col2:
+        # Exibir a quantidade de dias seguidos de pico de temperatura
+        st.metric(label="Dias seguidos com pico", value=dias_seguidos_picos)
+
+    with col3:
+        # Exibir o valor total de dias
+        total_dias = len(datas.dt.date.unique())
+        st.metric(label="Total de dias", value=total_dias)
+
+
+    # Filtrar os dados para obter as temperaturas médias e desejadas
+    temperaturas_medias = granja['Temperatura_Media']
+    temperatura_desejada = granja['Temperatura_Desejada']
+    datas = granja['Data/Hora']
+
+     # Encontrar os horários de maiores picos na temperatura
+    horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
+    horarios_maiores_picos.value_counts()
+    
+    # Gráfico Interativo dos picos
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=datas, y=temperaturas_medias, mode='lines', name='Temperatura Média'))
+    fig.add_trace(go.Scatter(x=datas, y=temperatura_desejada, mode='lines', name='Temperatura Desejada'))
+    fig.add_trace(go.Scatter(x=horarios_maiores_picos, y=temperaturas_medias[temperaturas_medias > temperatura_desejada], mode='markers', marker=dict(color='red'), name='Picos de Temperatura'))
+    fig.update_layout(
+        title='',
+        xaxis_title='Data/Hora',
+        yaxis_title='Temperatura',
+        width=1200,  # Definir a largura da janela do gráfico
+        height=1000,  # Definir a altura da janela do gráfico
+        legend=dict(
+            orientation="h",  # Orientação horizontal
+            yanchor="top",  # Âncora superior
+            y=1.1  # Posição vertical
+        )
+)
+    fig.update_xaxes(tickangle=45)
+
+    # Adicionar interatividade para exibir os valores no hover
+    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Temperatura: %{y}')
+    # Exibir o gráfico interativo no Streamlit
+    st.plotly_chart(fig)
+        
+    # Converter a coluna "Data/hora" para o tipo datetime
+    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
+
+    # Definir o período da manhã
+    inicio_manha = pd.Timestamp("06:00:00")
+    fim_manha = pd.Timestamp("11:59:59")
+
+    # Definir o período da Tarde 
+    inicio_tarde = pd.Timestamp("12:00:00")
+    fim_tarde = pd.Timestamp("17:59:59")
+
+    # Definir o período da Noite
+    inicio_noite = pd.Timestamp("18:00:00")
+    fim_noite = pd.Timestamp("23:59:59")
+
+    # Definir o período da Madrugada
+    inicio_madrugada = pd.Timestamp("00:00:00")
+    fim_madrugada = pd.Timestamp("05:59:59")
+    
+    # Filtrar os dados dentro do período da Manhã
+    dados_manha = granja[(granja['Data/Hora'].dt.time >= inicio_manha.time()) & (granja['Data/Hora'].dt.time <= fim_manha.time())]
+
+    # Filtrar os dados dentro do período da Tarde
+    dados_tarde = granja[(granja['Data/Hora'].dt.time >= inicio_tarde.time()) & (granja['Data/Hora'].dt.time <= fim_tarde.time())]
+
+    # Filtrar os dados dentro do período da Noite
+    dados_noite = granja[(granja['Data/Hora'].dt.time >= inicio_noite.time()) & (granja['Data/Hora'].dt.time <= fim_noite.time())]
+
+    # Filtrar os dados dentro do período da madrugada
+    dados_madrugada = granja[(granja['Data/Hora'].dt.time >= inicio_madrugada.time()) & (granja['Data/Hora'].dt.time <= fim_madrugada.time())]
+
+
+    # Calcular a quantidade de picos no período da Manhã
+    quantidade_picos_manha = dados_manha['Temperatura_Desejada'].count()
+  
+    # Calcular a quantidade de picos no período da Tarde
+    quantidade_picos_tarde = dados_tarde['Temperatura_Desejada'].count()
+  
+    # Calcular a quantidade de picos no período da Noite
+    quantidade_picos_noite = dados_noite['Temperatura_Desejada'].count()
+
+    # Calcular a quantidade de picos no período da madrugada
+    quantidade_picos_madrugada = dados_madrugada['Temperatura_Desejada'].count()
+
+
+    # Exibir a quantidade de picos nos períodos
+    
+    print(f"A quantidade de picos no período da manhã é: {quantidade_picos_manha}")
+    print(f"A quantidade de picos no período da tarde é: {quantidade_picos_tarde}")
+    print(f"A quantidade de picos no período da noite é: {quantidade_picos_noite}")
+    print(f"A quantidade de picos no período da madrugada é: {quantidade_picos_madrugada}")
+
+
+    # Criar um DataFrame com os resultados
+    resultados = pd.DataFrame({
+        'Período': ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
+        'Quantidade de Picos': [quantidade_picos_madrugada, quantidade_picos_manha, quantidade_picos_tarde, quantidade_picos_noite]
+    })
+
+    # Ordenar a tabela em ordem decrescente pela coluna 'Quantidade de Picos'
+    resultados = resultados.sort_values(by='Quantidade de Picos', ascending=False)
+
+
+
+ # Criar o gráfico de barras interativo usando o Plotly
+    fig_bar = px.bar(resultados, x='Período', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
+
+    # Exibir o gráfico de barras e o gráfico de linha no Streamlit
+    st.plotly_chart(fig_bar)
+
+            
+    # Converter a coluna 'Data/Hora' em um objeto datetime
+    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
+
+    # Definir a data de início como 16 de agosto
+    data_inicio = pd.to_datetime('2023-08-16').date()
+
+    # Adicionar a coluna 'Semana' considerando a data de início
+    granja['Semana'] = ((granja['Data/Hora'].dt.date - data_inicio).dt.days // 7)
+
+    # Contar a quantidade de picos em cada semana
+    picos_por_semana = granja['Semana'].value_counts()
+
+    # Criar o DataFrame de resultados
+    resultados = pd.DataFrame({'Semana': picos_por_semana.index, 'Quantidade de Picos': picos_por_semana.values})
+
+    # Ordenar os resultados por quantidade de picos em ordem decrescente
+    picos_por_semana = picos_por_semana.sort_values(ascending=False)
+
+    # Criar o gráfico de barras interativo com o Plotly
+    fig_bar = px.bar(resultados, x='Semana', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
+
+    # Atualizar o layout do gráfico
+    fig_bar.update_layout(title='Quantidade de Picos por Semana', xaxis_title='Semana', yaxis_title='Quantidade de Picos')
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig_bar)
+
 
