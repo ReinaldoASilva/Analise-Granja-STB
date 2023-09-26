@@ -7,7 +7,7 @@ import datetime as dt
 import matplotlib.dates as mdates
 import mplcursors
 import plotly.express as px
-
+ import matplotlib.pyplot as plt
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
