@@ -3,9 +3,7 @@ import streamlit as st
 
 st.title('Umidade!')
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
+
 
 
 st.title('Análise de Umidade no Aviário')
