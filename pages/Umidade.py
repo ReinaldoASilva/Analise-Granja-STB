@@ -5,8 +5,6 @@ import plotly.express as px
 import requests
 import io
 from io import StringIO
-u
-
 
 url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
 
