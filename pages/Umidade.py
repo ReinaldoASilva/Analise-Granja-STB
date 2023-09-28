@@ -40,7 +40,7 @@ if subpagina_selecionada == 'Análise de Umidade':
 
     st.title('Análise de Umidade no Aviário')
 
-    st.write("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
+    st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
 
     # Converter a coluna Data/Hora em um objeto datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
