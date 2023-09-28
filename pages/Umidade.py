@@ -5,9 +5,9 @@ import plotly.express as px
 import requests
 import io
 
-umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
+#umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
 
-url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv'
+url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKWJC2CCHFT3HZUUDAZIWAYGQ'
 response = requests.get(url)
 content = response.content
 
