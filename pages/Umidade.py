@@ -42,6 +42,13 @@ if subpagina_selecionada == 'Análise de Umidade':
 
     st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
 
+    if 'umidade' not in locals():
+            url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKYCARKKDW5M44DSROZIWBFGA'
+            response = requests.get(url)
+            content = response.content
+            umidade = pd.read_csv(io.BytesIO(content))
+
+
     # Converter a coluna Data/Hora em um objeto datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
 
