@@ -6,6 +6,10 @@ import plotly.express as px
 
 umidade = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
 
+url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQLO3F522KQHDNJCMJUZIV3X2Q'
+df = pd.read_csv(url,sep=',')
+# Carregar o arquivo usando pandas
+umidade = pd.read_excel(url)
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
