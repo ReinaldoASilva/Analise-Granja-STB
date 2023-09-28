@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import datetime as dt
 import plotly.express as px
 import requests 
+import io
 
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
@@ -15,11 +16,7 @@ subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
 if subpagina_selecionada == "Análise de Temperatura":
    
     # Criando um dataframe
-    granja = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv')
-    granja = pd.read_csv(granja, encoding="utf-8")
-
-    url = "https://raw.github.com/ReinaldoASilva/Analise-Granja-STB/blob/main/pages/smaai_leituras_atualizado.xlsx"
-    df = pd.read_excel(url)
+    granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.xlsx')
     
     
     # Converter a coluna 'Data/Hora' em um objeto datetime
