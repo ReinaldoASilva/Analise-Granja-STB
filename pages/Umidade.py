@@ -2,12 +2,21 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+import requests
+import io
+
+umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
+
+url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv'
+response = requests.get(url)
+content = response.content
+
+df = pd.read_csv(io.BytesIO(content))
+
+print(df)
 
 
-umidade = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
 
-url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQLO3F522KQHDNJCMJUZIV3X2Q'
-df = pd.read_csv(url,sep=',')
 # Carregar o arquivo usando pandas
 umidade = pd.read_excel(url)
 
