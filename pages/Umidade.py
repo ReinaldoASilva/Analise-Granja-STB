@@ -5,6 +5,13 @@ import plotly.express as px
 
 
 umidade = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
+smaai_leituras_atualizado.xlsx
+try:
+    st.write('Trying with back slashes')
+    st.dataframe(pd.read_sxls(r'.\\files\\smaai_leituras_atualizado.xlsx'))
+except:
+    st.write('It didn\'t work with back slashes.')
+
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
