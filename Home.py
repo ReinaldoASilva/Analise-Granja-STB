@@ -8,7 +8,9 @@ st.write("Este projeto de análise de dados tem como objetivo investigar como as
 Analisaremos os momentos em que a temperatura e umidade atingem niveis extremos, buscando compreender como esses fatores influenciam na conversão alimentar..\
 A ideia é buscar melhorias nas práticas de manejo e identificar os intervalos perfeitos de temperatura e umidade, com o objetivo de maximizar os lucros nas granjas analisadas.")
 
-st.image("https://github.com/ReinaldoASilva/Analise-Granja-STB/blob/main/producao-avicola.jpg?raw=true")
 
+uploaded_file = st.file_uploader("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/producao-avicola.jpg", type=["jpg", "png"])
+if uploaded_file is not None:
+    st.image(uploaded_file)
 
 
