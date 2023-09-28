@@ -38,38 +38,33 @@ if subpagina_selecionada == "Análise de Temperatura":
     dados_selecionados = granja[granja['Data'] == data_hora_selecionada]
 
     # Obter os valores das temperaturas mínima, máxima e média para a data/hora selecionada
-    temperatura_minima = round(dados_selecionados['TP_Minima_Diaria'].min(),2)
-    temperatura_maxima = round(dados_selecionados['TP_Maxima_Diaria'].max(),2)
-    temperatura_media = round(dados_selecionados['TP_Media_Diaria'].mean(), 2)
+    temperatura_minima = dados_selecionados['TP_Minima_Diaria'].min()
+    temperatura_maxima = dados_selecionados['TP_Maxima_Diaria'].max()
+    temperatura_media = dados_selecionados['TP_Media_Diaria'].mean()
     # Obter o valor da temperatura desejada do DataFrame
-    temperatura_ideal = float(dados_selecionados['Temperatura_Desejada'].iloc[0])
+    temperatura_ideal = dados_selecionados['Temperatura_Desejada'].iloc[0]
 
     # Calcular a diferença entre a temperatura mínima e desejada
-    delta_minima = temperatura_minima - temperatura_desejada[0]
-    delta_maxima = temperatura_maxima - temperatura_desejada[0]
-    delta_media =  temperatura_media - temperatura_desejada [0]
+    delta_minima = temperatura_minima 
+    delta_maxima = temperatura_maxima 
+    delta_media =  temperatura_media
+    delta_ideal = temperatura_ideal
     
 
-    # Exckuir colunas
-    colunas_excluir = ['Unnamed: 0','Data']
-    granja = granja.drop(columns=colunas_excluir)
-
-
     # Criar as colunas
-    col1, col2, col3, col4 = st.columns(4)
+    temperatura_ideal, temperatura_minima, temperatura_media, temperatura_maxima = st.columns(4)
 
-    with col1:
-        st.metric(label="Temperatura Ideal", value=format(temperatura_ideal, '.2f'))
+    with temperatura_ideal:
+        st.metric(label="Temperatura Ideal", value=format(delta_ideal))
 
-    with col2:
-        st.metric(label="Temperatura Mínima", value=format(temperatura_minima, '.2f'), delta=format(delta_minima, '.2f'), delta_color="off")
+    with temperatura_minima:
+        st.metric(label="Temperatura Mínima", value=format(delta_minima))
         
-    with col3:
-        st.metric(label="Temperatura Média", value=format(temperatura_media, '.2f'), delta=format(delta_media, '.2f'), delta_color="off")
+    with temperatura_media:
+        st.metric(label="Temperatura Média", value=format(delta_media, '.2f'))
 
-    with col4:
-       st.metric(label="Temperatura Máxima", value=format(temperatura_maxima, '.2f'),delta=format(delta_maxima, '.2f'), delta_color="off")
-
+    with temperatura_maxima:
+       st.metric(label="Temperatura Máxima", value=format(delta_maxima))
 
     
     # Gráfico com as temperaturas
