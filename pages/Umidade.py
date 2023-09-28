@@ -5,12 +5,7 @@ import plotly.express as px
 import requests
 import io
 from io import StringIO
-url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKYCARKKDW5M44DSROZIWBFGA'
-response = requests.get(url)
-content = response.content
-umidade = pd.read_csv(io.BytesIO(content))
-print(umidade)
-
+u
 
 
 url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
@@ -27,21 +22,13 @@ if response.status_code == 200:
     csv_file = StringIO(content)
 
     # Ler o arquivo CSV usando o Pandas
-    df = pd.read_csv(csv_file)
+    umidade = pd.read_csv(csv_file)
 
     # Exibir o DataFrame
     print(df)
 else:
     # Exibir uma mensagem de erro caso a requisição não seja bem-sucedida
     print('Erro ao baixar o arquivo CSV.')
-
-
-
-
-
-
-
-
 
 
 
