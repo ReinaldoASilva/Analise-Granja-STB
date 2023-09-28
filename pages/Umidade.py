@@ -4,12 +4,46 @@ import plotly.graph_objects as go
 import plotly.express as px
 import requests
 import io
-
+from io import StringIO
 url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKYCARKKDW5M44DSROZIWBFGA'
 response = requests.get(url)
 content = response.content
-
 umidade = pd.read_csv(io.BytesIO(content))
+print(umidade)
+
+
+
+url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
+
+# Fazer a requisição HTTP para obter o conteúdo do arquivo CSV
+response = requests.get(url)
+
+# Verificar se a requisição foi bem-sucedida
+if response.status_code == 200:
+    # Ler o conteúdo do arquivo CSV
+    content = response.content.decode('utf-8')
+
+    # Criar um objeto StringIO para ler o conteúdo como um arquivo CSV
+    csv_file = StringIO(content)
+
+    # Ler o arquivo CSV usando o Pandas
+    df = pd.read_csv(csv_file)
+
+    # Exibir o DataFrame
+    print(df)
+else:
+    # Exibir uma mensagem de erro caso a requisição não seja bem-sucedida
+    print('Erro ao baixar o arquivo CSV.')
+
+
+
+
+
+
+
+
+
+
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
