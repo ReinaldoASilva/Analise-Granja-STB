@@ -5,15 +5,15 @@ import plotly.express as px
 import requests
 import io
 
-#umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
+umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
 
-url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKWJC2CCHFT3HZUUDAZIWAYGQ'
-response = requests.get(url)
-content = response.content
+#url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKWJC2CCHFT3HZUUDAZIWAYGQ'
+#response = requests.get(url)
+#content = response.content
 
-umidade = pd.read_csv(io.BytesIO(content))
+#umidade = pd.read_csv(io.BytesIO(content))
 
-print(umidade)
+#print(umidade)
 
 
 
@@ -103,7 +103,7 @@ elif subpagina_selecionada == 'Análise por Período':
 
     # Se o gráfico não tiver dados na abertura é para reconhecer esse caminho
     if 'umidade' not in locals():
-        url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKWJC2CCHFT3HZUUDAZIWAYGQ'
+        umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
 
     # Arredondar os horários para períodos de 3Hs
     umidade['Periodo_Horas'] = umidade['Data/Hora'].dt.floor('3H')
