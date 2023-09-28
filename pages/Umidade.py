@@ -14,7 +14,6 @@ content = response.content
 
 umidade = pd.read_csv(io.BytesIO(content))
 
-print(umidade)
 
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
@@ -100,8 +99,10 @@ elif subpagina_selecionada == 'Análise por Período':
 
     # Se o gráfico não tiver dados na abertura é para reconhecer esse caminho
     if 'umidade' not in locals():
-        umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
-
+        url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKYCARKKDW5M44DSROZIWBFGA'
+        response = requests.get(url)
+        content = response.content
+        umidade = pd.read_csv(io.BytesIO(content))
     # Arredondar os horários para períodos de 3Hs
     umidade['Periodo_Horas'] = umidade['Data/Hora'].dt.floor('3H')
 
