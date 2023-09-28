@@ -15,9 +15,7 @@ subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
 if subpagina_selecionada == "Análise de Temperatura":
    
     # Criando um dataframe
-    granja = ('https://github.com/ReinaldoASilva/Analise-Granja-STB/raw/6eeefd50586794339cec01e09ca332f20a39b314/smaai_leituras_atualizado.xlsx')
-    granja = requests.get(granja).content
-    granja = pd.read_excel(granja)
+    granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.xlsx')
     # Converter a coluna 'Data/Hora' em um objeto datetime
     granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
 
