@@ -6,9 +6,15 @@ import requests
 import io
 from io import StringIO
 
-umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
+umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv')
 
+import os
 
+# Obter o diretório de trabalho atual
+current_directory = os.getcwd()
+
+# Imprimir o diretório de trabalho
+print("Diretório de trabalho atual:", current_directory)
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
