@@ -6,15 +6,32 @@ import requests
 import io
 from io import StringIO
 
-umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv')
+#umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv')
 
-import os
 
-# Obter o diretório de trabalho atual
-current_directory = os.getcwd()
 
-# Imprimir o diretório de trabalho
-print("Diretório de trabalho atual:", current_directory)
+uploaded_file = st.file_uploader("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv", accept_multiple_files=False)
+
+if uploaded_file is not None:
+    # Salvar o arquivo carregado em um local temporário
+    with open("temp_file.csv", "wb") as f:
+        f.write(uploaded_file.getvalue())
+    
+    # Obter o caminho absoluto do arquivo temporário
+    file_path = os.path.abspath("temp_file.csv")
+else:
+    # Se nenhum arquivo for carregado, usar o arquivo de exemplo
+    file_path = "DatabaseSample.xlsx"
+
+# Use o caminho do arquivo (file_path) para realizar as operações necessárias
+# por exemplo:
+# df = pd.read_excel(file_path)
+
+# Depois de terminar, excluir o arquivo temporário, se ele existir
+if os.path.exists("temp_file.xlsx"):
+    os.remove("temp_file.xlsx")
+
+
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
