@@ -8,28 +8,13 @@ from io import StringIO
 import os
 
 
-uploaded_file = st.file_uploader("Choose your database", accept_multiple_files=False)
+file_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv"
 
-if uploaded_file is not None:
-    # Salvar o arquivo carregado em um local temporário
-    with open("temp_file.xlsx", "wb") as f:
-        f.write(uploaded_file.getvalue())
-    
-    # Obter o caminho absoluto do arquivo temporário
-    file_path = os.path.abspath("temp_file.xlsx")
-else:
-    # Se nenhum arquivo for carregado, usar o caminho do seu arquivo
-    file_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx"
+# Use the file path to read the Excel file with the "openpyxl" engine
+umidade = pd.read_csv(file_path)
 
-# Use o caminho do arquivo (file_path) para realizar as operações necessárias
-# por exemplo:
-# df = pd.read_excel(file_path)
-
-# Depois de terminar, excluir o arquivo temporário, se ele existir
-if os.path.exists("temp_file.xlsx"):
-    os.remove("temp_file.xlsx")
-
-umidade = pd.read_excel(file_path)
+# Example: Print the first few rows of the DataFrame
+print(umidade.head())
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
