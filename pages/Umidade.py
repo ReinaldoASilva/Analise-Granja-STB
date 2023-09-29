@@ -6,27 +6,7 @@ import requests
 import io
 from io import StringIO
 
-url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
-
-# Fazer a requisição HTTP para obter o conteúdo do arquivo CSV
-response = requests.get(url)
-
-# Verificar se a requisição foi bem-sucedida
-if response.status_code == 200:
-    # Ler o conteúdo do arquivo CSV
-    content = response.content.decode('utf-8')
-
-    # Criar um objeto StringIO para ler o conteúdo como um arquivo CSV
-    csv_file = StringIO(content)
-
-    # Ler o arquivo CSV usando o Pandas
-    umidade = pd.read_csv(csv_file)
-
-    # Exibir o DataFrame
-    print(df)
-else:
-    # Exibir uma mensagem de erro caso a requisição não seja bem-sucedida
-    print('Erro ao baixar o arquivo CSV.')
+umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
 
 
 
@@ -41,30 +21,6 @@ if subpagina_selecionada == 'Análise de Umidade':
     st.title('Análise de Umidade no Aviário')
 
     st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
-    
-    if 'umidade' not in locals():
-        url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
-
-    # Fazer a requisição HTTP para obter o conteúdo do arquivo CSV
-        response = requests.get(url)
-
-    # Verificar se a requisição foi bem-sucedida
-        if response.status_code == 200:
-            # Ler o conteúdo do arquivo CSV
-            content = response.content.decode('utf-8')
-
-            # Criar um objeto StringIO para ler o conteúdo como um arquivo CSV
-            csv_file = StringIO(content)
-
-            # Ler o arquivo CSV usando o Pandas
-            umidade = pd.read_csv(csv_file)
-
-            # Exibir o DataFrame
-            print(df)
-        else:
-            # Exibir uma mensagem de erro caso a requisição não seja bem-sucedida
-            print('Erro ao baixar o arquivo CSV.')
-
 
     # Converter a coluna Data/Hora em um objeto datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
