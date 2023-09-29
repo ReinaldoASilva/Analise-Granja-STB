@@ -12,8 +12,6 @@ import os
 # Use the file path to read the Excel file with the "openpyxl" engine
 umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
 
-file_path = "smaai.csv"
-df = pd.read_csv(file_path)
 
 # Example: Print the first few rows of the DataFrame
 
