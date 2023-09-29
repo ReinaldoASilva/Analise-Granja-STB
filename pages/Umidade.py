@@ -6,7 +6,8 @@ import requests
 import io
 from io import StringIO
 import os
-#umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/pages/smaai_leituras_atualizado.csv')
+
+
 uploaded_file = st.file_uploader("Choose your database", accept_multiple_files=False)
 
 if uploaded_file is not None:
