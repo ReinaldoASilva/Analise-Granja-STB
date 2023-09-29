@@ -8,13 +8,11 @@ from io import StringIO
 import os
 
 
-file_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv"
 
 # Use the file path to read the Excel file with the "openpyxl" engine
-umidade = pd.read_csv(file_path)
+umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
 
 # Example: Print the first few rows of the DataFrame
-print(umidade.head())
 
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
