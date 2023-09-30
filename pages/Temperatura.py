@@ -68,11 +68,12 @@ if subpagina_selecionada == "Análise de Temperatura":
     with temperatura_maxima:
        st.metric(label="Temperatura Máxima", value=format(delta_maxima))
 
-    
+    st.markdown('Nesse gráfico veremos a flutuação da temperatura durante o dia. \
+        A linhas azul escura é a temperatura ideal, e a linha gráfica é a temperatura do ambiente')
     # Gráfico com as temperaturas
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Media'], mode='lines', name='Temperatura'))
-    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Desejada'))
+    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Ideal'))
     fig.update_layout(
         title='',
         xaxis_title='Data/Hora',
