@@ -189,10 +189,6 @@ elif subpagina_selecionada == "Pico de Temperatura":
     # Calcular a quantidade de dias com picos de temperatura
     quantidade_dias_picos = len(dias_picos_temperatura)
 
-    # Calcular a quantidade de dias com picos de temperatura
-    quantidade_dias_picos = len(dias_picos_temperatura)
-
-
     # Determinar quantos dias seguidos de pico de temperatura ocorreram
     dias_seguidos_picos = 0
     for i in range(len(dias_picos_temperatura) - 1):
@@ -200,9 +196,6 @@ elif subpagina_selecionada == "Pico de Temperatura":
         data_seguinte = dias_picos_temperatura[i + 1]
         if (data_seguinte - data_atual).days == 1:
             dias_seguidos_picos += 1
-
-    # Exibir a quantidade de dias seguidos de pico de temperatura
-    #st.write(f"Quantidade de dias seguidos de pico de temperatura: {dias_seguidos_picos}")
 
     # Criar colunas
     col1, col2, col3 = st.columns(3)

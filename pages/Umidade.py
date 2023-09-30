@@ -6,12 +6,16 @@ import requests
 import io
 from io import StringIO
 import os
-
+from pathlib import Path
 
 
 # Use the file path to read the Excel file with the "openpyxl" engine
-umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
+#umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
 
+current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
+data = current_dir /'smaai.csv'
+
+umidade = pd.read_csv(data)
 
 # Example: Print the first few rows of the DataFrame
 
@@ -95,37 +99,8 @@ elif subpagina_selecionada == 'Análise por Período':
     st.write = ' Nesse momento teremos uma visão mais ampla sobrea situação\
         do aviário, analisando a umidade por dia, o que nos da uma visão\
         mais completa.'
-
-    # Se o gráfico não tiver dados na abertura é para reconhecer esse caminho
-    
-    
-    if 'umidade' not in locals():
-        url = 'https://raw.githubusercontent.com/ReinaldoASilva/Analise-Granja-STB/main/smaai_leituras_atualizado.csv?token=GHSAT0AAAAAACHY4PQKJFVKRUTAZFBT7MKUZIWBUAQ'
-
-# Fazer a requisição HTTP para obter o conteúdo do arquivo CSV
-        response = requests.get(url)
-
-        # Verificar se a requisição foi bem-sucedida
-        if response.status_code == 200:
-            # Ler o conteúdo do arquivo CSV
-            content = response.content.decode('utf-8')
-
-            # Criar um objeto StringIO para ler o conteúdo como um arquivo CSV
-            csv_file = StringIO(content)
-
-            # Ler o arquivo CSV usando o Pandas
-            umidade = pd.read_csv(csv_file)
-
-            # Exibir o DataFrame
-            print(df)
-        else:
-            # Exibir uma mensagem de erro caso a requisição não seja bem-sucedida
-            print('Erro ao baixar o arquivo CSV.')
-
-
-
-
-
+    # Converter a colunadata/hora para dtypes
+    umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
 
     # Arredondar os horários para períodos de 3Hs
     umidade['Periodo_Horas'] = umidade['Data/Hora'].dt.floor('3H')
@@ -183,6 +158,50 @@ elif subpagina_selecionada == 'Análise por Período':
 
     else:
         st.markdown("Não há dados disponíveis para a data selecionada.")
+
+#################################################################### PÁGINA PICOS DE TEMPERATURA ####################################################################
+
+elif subpagina_selecionada == 'Pico de Umidade':
+    
+    #Título
+    st.markdown("<h2 style='text-align: center;'>Picos de Umidade</h2>", unsafe_allow_html=True)
+
+    # Filtrar os dados para obter as umidade desejadas e médias
+    umidade_media = umidade['Umidade_Media']
+    umidade_desejada = umidade['Umidade_Desejada']
+    datas = umidade['Data/Hora']
+
+    # Encontrar os horários de maiores picos na umidade
+    horarios_maiores_picos = datas[umidade_media > umidade_desejada]
+
+    # Obter as dataas únicas com picos de umidade
+    horarios_maiores_picos = pd.to_datetime(horarios_maiores_picos)
+    dias_picos_umidade = horarios_maiores_picos.dt.date.unique()
+
+    # Calcular quantidades de dias com pico de umidade
+    quantidade_dias_picos = len(dias_picos_umidade)
+
+    # Determinar quantos dias seguidos de pico de umidade ocorreram
+    dias_seguidos_picos_umidade = 0
+    for i in range(len(dias_picos_umidade) - 1):
+        data_atual = dias_picos_umidade[i]
+        data_seguinte = dias_picos_umidade[i + 1]
+        if (data_seguinte - data_atual).days == 1:
+            dias_seguidos_picos_umidade += 1
+
+    # Criar colunas
+    dias_de_pico, dias_seguidos_picos, total_dias = st.columns(3)
+    
+    # Adicionar valores nas colunas criadas acima
+    with dias_de_pico:
+        st.metric(label= 'Dias de pico', value= quantidade_dias_picos)
+
+    with dias_seguidos_picos:
+        st.metric(label= ' Dias Seguidos de Pico', value=dias_seguidos_picos_umidade)
+
+    with total_dias:
+        total_dias = len(datas.dt.date.unique())
+        st.metric(label='Total de Dias', value=total_dias)
 
 
 
