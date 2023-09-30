@@ -5,7 +5,12 @@ import datetime as dt
 import plotly.express as px
 import requests 
 import io
+from pathlib import Path
 
+# Coletando dados
+current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
+data = current_dir /'smaai.csv'
+granja = pd.read_csv(data)
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
@@ -14,11 +19,7 @@ subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
 
 # Lógica para exibir conteúdo com base na subpágina selecionada
 if subpagina_selecionada == "Análise de Temperatura":
-   
-    # Criando um dataframe
-    umidade = pd.read_csv('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.csv')
-
-    
+     
     # Converter a coluna 'Data/Hora' em um objeto datetime
     granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
 
@@ -29,7 +30,7 @@ if subpagina_selecionada == "Análise de Temperatura":
     st.title('Análise de Temperatura no Aviário')
 
     # Texto
-    st.write("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
+    st.markdown("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
 
     # Extrair os valores da coluna 'Temperatura_Desejada'
     temperatura_desejada = granja['Temperatura_Desejada'].values
@@ -101,10 +102,10 @@ elif subpagina_selecionada == "Analise por Perído":
    # Título
     st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
     
-    # Se o gráfico não tiver dados na abertura reconhecer esse caminho
-    if 'granja' not in locals():
-        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
-    
+ # Converter a colunadata/hora para dtypes
+    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
+
+
     # Arredondar os horários para períodos de 3 horas
     granja['Periodo_Horas'] = granja['Data/Hora'].dt.floor('3H')
 
@@ -136,18 +137,18 @@ elif subpagina_selecionada == "Analise por Perído":
     contagem_picos = horarios_agrupados.value_counts()
 
     # Exibir o intervalo de horários com base no período de 3 horas
-    st.write("Intervalo de Horários com Ultrapassagem do Limite de Temperatura:")
+    st.markdown("Intervalo de Horários com Ultrapassagem do Limite de Temperatura:")
     for horario, count in contagem_picos.items():
-        st.write(f"{horario} - {count} pico(s)")
+        st.markdown(f"{horario} - {count} pico(s)")
 
     # Exibir a parte do dia com base no horário
     parte_dia = horarios_agrupados.apply(lambda x: "Madrugada" if 0 <= x.hour < 6 else "Manhã" if 6 <= x.hour < 12 else "Tarde" if 12 <= x.hour < 18 else "Noite")
     parte_dia_contagem = parte_dia.value_counts()
 
     # Exibir a contagem de picos por parte do dia
-    st.write("Contagem de Picos de Temperatura por Parte do Dia:")
+    st.markdown("Contagem de Picos de Temperatura por Parte do Dia:")
     for parte, count in parte_dia_contagem.items():
-        st.write(f"{parte}: {count} pico(s)")
+        st.markdown(f"{parte}: {count} pico(s)")
 
         # Verificar se há dados disponíveis para a parte do dia
     if not parte_dia_contagem.empty:
@@ -160,7 +161,7 @@ elif subpagina_selecionada == "Analise por Perído":
             st.plotly_chart(fig)
        
     else:
-        st.write("Não há dados disponíveis para a data selecionada.")
+        st.markdown("Não há dados disponíveis para a data selecionada.")
 
 
 #################################################################### PÁGINA PICOS DE TEMPERATURA ####################################################################
@@ -171,23 +172,23 @@ elif subpagina_selecionada == "Pico de Temperatura":
     # Título
     st.markdown("<h2 style='text-align: center;'>Picos de Temperatura</h2>", unsafe_allow_html=True)
 
-    # Se o gráfico não tiver dados na abertura reconhecer esse caminho
-    if 'granja' not in locals():
-        granja = pd.read_excel('/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai_leituras_atualizado.xlsx')
-
     #Filtrar os dados para obter as temperaturas médias e desejadas
     temperaturas_medias = granja['Temperatura_Media']
     temperatura_desejada = granja['Temperatura_Desejada']
     datas = granja['Data/Hora']
+    datas = datas.to_frame().rename(columns={0: 'Data/Hora'})
 
     # Encontrar os horários de maiores picos na temperatura
     horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
 
     # Obter as datas únicas com picos de temperatura
-    dias_picos_temperatura = horarios_maiores_picos.dt.date.unique()
-
+    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
+    #dias_picos_temperatura = horarios_maiores_picos.dt.date.unique()
+    dias_picos_temperatura = granja['Data/Hora'].dt.date.unique()
     # Calcular a quantidade de dias com picos de temperatura
     quantidade_dias_picos = len(dias_picos_temperatura)
+
+    total_dias = len(granja['Data/Hora'].dt.date.unique())
 
     # Determinar quantos dias seguidos de pico de temperatura ocorreram
     dias_seguidos_picos = 0
@@ -210,7 +211,6 @@ elif subpagina_selecionada == "Pico de Temperatura":
 
     with col3:
         # Exibir o valor total de dias
-        total_dias = len(datas.dt.date.unique())
         st.metric(label="Total de dias", value=total_dias)
 
 

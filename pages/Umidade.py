@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 import requests
 import io
 from io import StringIO
 import os
 from pathlib import Path
+import plotly.express as px
 
 
 # Use the file path to read the Excel file with the "openpyxl" engine
@@ -181,6 +181,12 @@ elif subpagina_selecionada == 'Pico de Umidade':
     # Calcular quantidades de dias com pico de umidade
     quantidade_dias_picos = len(dias_picos_umidade)
 
+    # Calcular a quantidade de dias
+    umidade['data'] = pd.to_datetime(umidade['Data/Hora'])
+    quantidade_dias = umidade['data'].dt.date.nunique()
+    quantidade_dias_inteiro = int(quantidade_dias)
+
+
     # Determinar quantos dias seguidos de pico de umidade ocorreram
     dias_seguidos_picos_umidade = 0
     for i in range(len(dias_picos_umidade) - 1):
@@ -190,7 +196,7 @@ elif subpagina_selecionada == 'Pico de Umidade':
             dias_seguidos_picos_umidade += 1
 
     # Criar colunas
-    dias_de_pico, dias_seguidos_picos, total_dias = st.columns(3)
+    dias_de_pico, dias_seguidos_picos, total_dias_umidade = st.columns(3)
     
     # Adicionar valores nas colunas criadas acima
     with dias_de_pico:
@@ -199,10 +205,139 @@ elif subpagina_selecionada == 'Pico de Umidade':
     with dias_seguidos_picos:
         st.metric(label= ' Dias Seguidos de Pico', value=dias_seguidos_picos_umidade)
 
-    with total_dias:
-        total_dias = len(datas.dt.date.unique())
-        st.metric(label='Total de Dias', value=total_dias)
+    with total_dias_umidade:
+        st.metric(label='Total de Dias', value=quantidade_dias_inteiro)
 
+
+    # Filtrar os dados para obter as umidade médias e desejadas
+    umidade_medias = umidade['Umidade_Media']
+    umidade_desejada = umidade['Umidade_Desejada']
+    datas = umidade['Data/Hora']
+
+     # Encontrar os horários de maiores picos na umidade
+    horarios_maiores_picos = datas[ umidade_medias > umidade_desejada]
+    horarios_maiores_picos.value_counts()
+    
+    # Gráfico Interativo dos picos
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=datas, y= umidade_medias, mode='lines', name='Temperatura Média'))
+    fig.add_trace(go.Scatter(x=datas, y=umidade_desejada, mode='lines', name='Temperatura Desejada'))
+    fig.add_trace(go.Scatter(x=horarios_maiores_picos, y=umidade_medias[umidade_medias > umidade_desejada], mode='markers', marker=dict(color='red'), name='Picos de Umidade'))
+    fig.update_layout(
+        title='',
+        xaxis_title='Data/Hora',
+        yaxis_title='Umidade',
+        width=1200,  # Definir a largura da janela do gráfico
+        height=1000,  # Definir a altura da janela do gráfico
+        legend=dict(
+            orientation="h",  # Orientação horizontal
+            yanchor="top",  # Âncora superior
+            y=1.1  # Posição vertical
+        )
+)
+    fig.update_xaxes(tickangle=45)
+
+    # Adicionar interatividade para exibir os valores no hover
+    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Temperatura: %{y}')
+    # Exibir o gráfico interativo no Streamlit
+    st.plotly_chart(fig)
+        
+    # Converter a coluna "Data/hora" para o tipo datetime
+    umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
+
+    # Definir o período da manhã
+    inicio_manha = pd.Timestamp("06:00:00")
+    fim_manha = pd.Timestamp("11:59:59")
+
+    # Definir o período da Tarde 
+    inicio_tarde = pd.Timestamp("12:00:00")
+    fim_tarde = pd.Timestamp("17:59:59")
+
+    # Definir o período da Noite
+    inicio_noite = pd.Timestamp("18:00:00")
+    fim_noite = pd.Timestamp("23:59:59")
+
+    # Definir o período da Madrugada
+    inicio_madrugada = pd.Timestamp("00:00:00")
+    fim_madrugada = pd.Timestamp("05:59:59")
+    
+    # Filtrar os dados dentro do período da Manhã
+    dados_manha = umidade[(umidade['Data/Hora'].dt.time >= inicio_manha.time()) & (umidade['Data/Hora'].dt.time <= fim_manha.time())]
+
+    # Filtrar os dados dentro do período da Tarde
+    dados_tarde =umidade[(umidade['Data/Hora'].dt.time >= inicio_tarde.time()) & (umidade['Data/Hora'].dt.time <= fim_tarde.time())]
+
+    # Filtrar os dados dentro do período da Noite
+    dados_noite = umidade[(umidade['Data/Hora'].dt.time >= inicio_noite.time()) & (umidade['Data/Hora'].dt.time <= fim_noite.time())]
+
+    # Filtrar os dados dentro do período da madrugada
+    dados_madrugada = umidade[(umidade['Data/Hora'].dt.time >= inicio_madrugada.time()) & (umidade['Data/Hora'].dt.time <= fim_madrugada.time())]
+
+
+    # Calcular a quantidade de picos no período da Manhã
+    quantidade_picos_manha = dados_manha['Umidade_Desejada'].count()
+  
+    # Calcular a quantidade de picos no período da Tarde
+    quantidade_picos_tarde = dados_tarde['Umidade_Desejada'].count()
+  
+    # Calcular a quantidade de picos no período da Noite
+    quantidade_picos_noite = dados_noite['Umidade_Desejada'].count()
+
+    # Calcular a quantidade de picos no período da madrugada
+    quantidade_picos_madrugada = dados_madrugada['Umidade_Desejada'].count()
+
+
+    # Exibir a quantidade de picos nos períodos
+    
+    print(f"A quantidade de picos no período da manhã é: {quantidade_picos_manha}")
+    print(f"A quantidade de picos no período da tarde é: {quantidade_picos_tarde}")
+    print(f"A quantidade de picos no período da noite é: {quantidade_picos_noite}")
+    print(f"A quantidade de picos no período da madrugada é: {quantidade_picos_madrugada}")
+
+
+    # Criar um DataFrame com os resultados
+    resultados = pd.DataFrame({
+        'Período': ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
+        'Quantidade de Picos': [quantidade_picos_madrugada, quantidade_picos_manha, quantidade_picos_tarde, quantidade_picos_noite]
+    })
+
+    # Ordenar a tabela em ordem decrescente pela coluna 'Quantidade de Picos'
+    resultados = resultados.sort_values(by='Quantidade de Picos', ascending=False)
+
+
+ # Criar o gráfico de barras interativo usando o Plotly
+    fig_bar = px.bar(resultados, x='Período', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
+
+    # Exibir o gráfico de barras e o gráfico de linha no Streamlit
+    st.plotly_chart(fig_bar)
+
+            
+    # Converter a coluna 'Data/Hora' em um objeto datetime
+    umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
+
+    # Definir a data de início como 16 de agosto
+    data_inicio = pd.to_datetime('2023-08-16').date()
+
+    # Adicionar a coluna 'Semana' considerando a data de início
+    umidade['Semana'] = ((umidade['Data/Hora'].dt.date - data_inicio).dt.days // 7)
+
+    # Contar a quantidade de picos em cada semana
+    picos_por_semana = umidade['Semana'].value_counts()
+
+    # Criar o DataFrame de resultados
+    resultados = pd.DataFrame({'Semana': picos_por_semana.index, 'Quantidade de Picos': picos_por_semana.values})
+
+    # Ordenar os resultados por quantidade de picos em ordem decrescente
+    picos_por_semana = picos_por_semana.sort_values(ascending=False)
+
+    # Criar o gráfico de barras interativo com o Plotly
+    fig_bar = px.bar(resultados, x='Semana', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
+
+    # Atualizar o layout do gráfico
+    fig_bar.update_layout(title='Quantidade de Picos por Semana', xaxis_title='Semana', yaxis_title='Quantidade de Picos')
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig_bar)
 
 
 
