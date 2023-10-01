@@ -22,7 +22,7 @@ subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
 
 if subpagina_selecionada == 'Análise de Umidade':
 
-
+    st.set_page_config(layout="wide")
     st.title('Análise de Umidade no Aviário')
 
     st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
