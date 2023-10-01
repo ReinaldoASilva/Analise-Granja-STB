@@ -10,6 +10,8 @@ from pathlib import Path
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
 data = current_dir /'smaai.csv'
 granja = pd.read_csv(data)
+
+st.set_page_config(layout="wide")
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
@@ -19,7 +21,6 @@ subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
 # Lógica para exibir conteúdo com base na subpágina selecionada
 if subpagina_selecionada == "Análise de Temperatura":
      
-    st.set_page_config(layout="wide")
     # Converter a coluna 'Data/Hora' em um objeto datetime
     granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
 
@@ -98,7 +99,7 @@ if subpagina_selecionada == "Análise de Temperatura":
 
 elif subpagina_selecionada == "Analise por Perído":
    
-    st.set_page_config(layout="wide")
+    
    # Título
     st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
     
@@ -169,7 +170,7 @@ elif subpagina_selecionada == "Analise por Perído":
 
 elif subpagina_selecionada == "Pico de Temperatura":
 
-    st.set_page_config(layout="wide")
+    
     # Título
     st.markdown("<h2 style='text-align: center;'>Picos de Temperatura</h2>", unsafe_allow_html=True)
 

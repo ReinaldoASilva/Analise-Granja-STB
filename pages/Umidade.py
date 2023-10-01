@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 import plotly.express as px
-st.set_page_config(layout="wide")
+
 
 # Use the file path to read the Excel file with the "openpyxl" engine
 #umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
@@ -13,8 +13,7 @@ data = current_dir /'smaai.csv'
 
 umidade = pd.read_csv(data)
 
-# Example: Print the first few rows of the DataFrame
-
+st.set_page_config(layout="wide")
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
 
@@ -22,7 +21,7 @@ subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
 
 if subpagina_selecionada == 'Análise de Umidade':
 
-    st.set_page_config(layout="wide")
+    
     st.title('Análise de Umidade no Aviário')
 
     st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
@@ -92,7 +91,7 @@ if subpagina_selecionada == 'Análise de Umidade':
 
 elif subpagina_selecionada == 'Análise por Período':
 
-    st.set_page_config(layout="wide")
+    
     st.write = ' Nesse momento teremos uma visão mais ampla sobrea situação\
         do aviário, analisando a umidade por dia, o que nos da uma visão\
         mais completa.'
@@ -160,7 +159,7 @@ elif subpagina_selecionada == 'Análise por Período':
 
 elif subpagina_selecionada == 'Pico de Umidade':
     
-    st.set_page_config(layout="wide")
+    
     #Título
     st.markdown("<h2 style='text-align: center;'>Picos de Umidade</h2>", unsafe_allow_html=True)
 
