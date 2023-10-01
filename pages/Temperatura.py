@@ -223,7 +223,7 @@ elif subpagina_selecionada == "Pico de Temperatura":
 
      # Encontrar os horários de maiores picos na temperatura
     horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
-    horarios_maiores_picos.value_counts()0
+    horarios_maiores_picos.value_counts()
     
     # Gráfico Interativo dos picos
     fig = go.Figure()
