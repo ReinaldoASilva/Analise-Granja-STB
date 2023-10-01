@@ -92,6 +92,7 @@ if subpagina_selecionada == 'Análise de Umidade':
 
 elif subpagina_selecionada == 'Análise por Período':
 
+    st.set_page_config(layout="wide")
     st.write = ' Nesse momento teremos uma visão mais ampla sobrea situação\
         do aviário, analisando a umidade por dia, o que nos da uma visão\
         mais completa.'
@@ -159,6 +160,7 @@ elif subpagina_selecionada == 'Análise por Período':
 
 elif subpagina_selecionada == 'Pico de Umidade':
     
+    st.set_page_config(layout="wide")
     #Título
     st.markdown("<h2 style='text-align: center;'>Picos de Umidade</h2>", unsafe_allow_html=True)
 
