@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import datetime as dt
 import plotly.express as px
 from pathlib import Path
+st.set_page_config(layout="wide")
 
 # Coletando dados
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
@@ -68,14 +69,12 @@ if subpagina_selecionada == "Análise de Temperatura":
     with temperatura_maxima:
        st.metric(label="Temperatura Máxima", value=format(delta_maxima))
 
-    st.markdown('Nesse gráfico veremos a flutuação da temperatura durante o dia. \
-        A linhas azul escura é a temperatura ideal, e a linha gráfica é a temperatura do ambiente')
-    # Gráfico com as temperaturas
+ # Gráfico com as temperaturas
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Media'], mode='lines', name='Temperatura'))
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Ideal'))
     fig.update_layout(
-        title='',
+        title='Nesse gráfico veremos a flutuação da temperatura durante o dia. A linha azul escura é nossa temperatura ideal! ',
         xaxis_title='Data/Hora',
         yaxis_title='Temperatura',
         width=800,  # Definir a largura da janela do gráfico
@@ -153,7 +152,7 @@ elif subpagina_selecionada == "Analise por Perído":
     if not parte_dia_contagem.empty:
 
             # Criar um gráfico de barras interativo para a contagem de picos por parte do dia
-            fig = px.bar(parte_dia_contagem, x=parte_dia_contagem.index, y=parte_dia_contagem.values, labels={'x': 'Parte do Dia', 'y': 'Contagem de Picos'}, title='')
+            fig = px.bar(parte_dia_contagem, x=parte_dia_contagem.index, y=parte_dia_contagem.values, labels={'x': 'Parte do Dia', 'y': 'Contagem de Picos'}, title='Aqui você poderá observar o gráfico por períodos e identificar seus picos!')
             fig.update_layout(xaxis={'categoryorder': 'array', 'categoryarray': ['Madrugada', 'Manhã', 'Tarde', 'Noite']})  # Ordenar as categorias corretamente
 
             # Exibir o gráfico de barras interativo no Streamlit
@@ -220,7 +219,7 @@ elif subpagina_selecionada == "Pico de Temperatura":
 
      # Encontrar os horários de maiores picos na temperatura
     horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
-    horarios_maiores_picos.value_counts()
+    horarios_maiores_picos.value_counts()0
     
     # Gráfico Interativo dos picos
     fig = go.Figure()

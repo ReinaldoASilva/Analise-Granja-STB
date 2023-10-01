@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 import plotly.express as px
-
+st.set_page_config(layout="wide")
 
 # Use the file path to read the Excel file with the "openpyxl" engine
 #umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")

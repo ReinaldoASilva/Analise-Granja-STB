@@ -2,6 +2,8 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 from PIL import Image
+st.set_page_config(layout="wide")
+
 st.markdown("<h2 style='text-align: center;'>Avaliando a Performance em Ambientes Controlados!</h2>", unsafe_allow_html=True)
     
 st.markdown("Este projeto de análise de dados tem como objetivo investigar como as condições ambientais afetam o desempenho das aves. \
