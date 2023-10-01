@@ -98,7 +98,7 @@ if subpagina_selecionada == "Análise de Temperatura":
 
 elif subpagina_selecionada == "Analise por Perído":
    
-   st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide")
    # Título
     st.markdown("<h2 style='text-align: center;'>Análise por Período</h2>", unsafe_allow_html=True)
     
