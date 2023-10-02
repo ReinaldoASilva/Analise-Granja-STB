@@ -3,28 +3,48 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 import plotly.express as px
+from PIL import Image
 
 
-# Use the file path to read the Excel file with the "openpyxl" engine
-#umidade = pd.read_csv("/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/smaai.csv")
-
+# Coletando dados
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
 data = current_dir /'smaai.csv'
-
 umidade = pd.read_csv(data)
 
+# Modo responsivo
 st.set_page_config(layout="wide")
+
+# Definindo as opções do submenu de Temperatura
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
+
+
+ # Carrega o logotipo
+logo_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/logo.png"  # Substitua pelo caminho correto do seu logotipo
+logo = Image.open(logo_path)
+
+# Define a largura fixa do logotipo
+logo_width = 300
+
+
+# Cria uma coluna para exibir o logotipo acima do menu
+col_logo, col_menu = st.sidebar.columns([logo_width, 1])
+
+# Exibe o logotipo na coluna do logotipo
+with col_logo:
+    st.image(logo, width=logo_width)
 
 #################################################################### PÁGINA ANÁLISE DE UMIDADE ####################################################################
 
 if subpagina_selecionada == 'Análise de Umidade':
 
-    
-    st.title('Análise de Umidade no Aviário')
-
-    st.header("Manter a temperatura adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.")
+    # Título
+    st.markdown("<div style='text-align: center;'>"
+            "<h1>Análise de Umidade no Aviário</h1>"
+            "</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;'>"
+            "<h5>Manter a Umidade adequada no aviário é essencial para promover o bem-estar, otimizar o desempenho, controlar a reprodução, prevenir doenças e obter melhores resultados econômicos na criação de aves.</h5>"
+            "</div>", unsafe_allow_html=True) 
 
     # Converter a coluna Data/Hora em um objeto datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
@@ -67,8 +87,11 @@ if subpagina_selecionada == 'Análise de Umidade':
     with umidade_maxima:
         st.metric(label='Umidade Máxima', value=format(delta_maxima))
 
-    # Gráfico com as temperaturas
+    # Título
+    st.write('#')
+    st.markdown("<p style='text-align: center;'>No gráfico abaixo 👇 veremos a flutuação da Umidade durante o dia. A linha vermelha é nossa Umidade ideal!</p>", unsafe_allow_html=True)# Gráfico com as temperaturas
 
+    # Gráfico 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Umidade_Media'], mode='lines', name='Temperatura'))
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Umidade_Desejada'],mode='lines', name='Umidade Ideal'))
@@ -91,10 +114,14 @@ if subpagina_selecionada == 'Análise de Umidade':
 
 elif subpagina_selecionada == 'Análise por Período':
 
-    
-    st.write = ' Nesse momento teremos uma visão mais ampla sobrea situação\
-        do aviário, analisando a umidade por dia, o que nos da uma visão\
-        mais completa.'
+    # Título
+    st.markdown("<div style='text-align: center;'>"
+            "<h1>Análise por Período</h1>"
+            "</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;'>"
+            "<h5>Aqui você pode fazer a Análise da Umidade por Período.👇</h5>"
+            "</div>", unsafe_allow_html=True)       
+   
     # Converter a colunadata/hora para dtypes
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
 
@@ -142,6 +169,12 @@ elif subpagina_selecionada == 'Análise por Período':
     for parte, count in parte_dia_contagem.items():
         st.markdown(f"{parte}: {count} picos(s)")
 
+    # Título do Gráfico
+    st.markdown("<div style='text-align: center;'>"
+                "<h5>Aqui você pode ver o gráfico da análise dos períodos.👇</h5>"
+                "</div>", unsafe_allow_html=True)   
+
+
     # Verificar se há dados disponíveis na parte do dia
     if not parte_dia_contagem.empty:
 
@@ -150,18 +183,29 @@ elif subpagina_selecionada == 'Análise por Período':
             fig.update_layout(xaxis={'categoryorder': 'array', 'categoryarray': ['Manhã', 'Tarde', 'Noite', 'Madrugada']})
 
         # Exibir o gráfico de barras interativo no Streamlit
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, config={'displayModeBar': False})
 
     else:
         st.markdown("Não há dados disponíveis para a data selecionada.")
 
 #################################################################### PÁGINA PICOS DE TEMPERATURA ####################################################################
 
+# Subpágina
 elif subpagina_selecionada == 'Pico de Umidade':
     
-    
-    #Título
-    st.markdown("<h2 style='text-align: center;'>Picos de Umidade</h2>", unsafe_allow_html=True)
+    # Título
+    st.markdown("<div style='text-align: center;'>"
+            "<h1>Picos de Umidade</h1>"
+            "</div>", unsafe_allow_html=True)
+    st.markdown("<div>"
+            "Aqui podemos visualizar a quantidade de dias em que ocorreram picos de Umidade, "
+            "bem como a duração dos períodos consecutivos e o total de dias afetados. Essas informações nos "
+            "ajudam a compreender a importância de uma gestão mais eficiente do ambiente, visando proporcionar "
+            "condições ideais.👇"
+            "</div>", unsafe_allow_html=True)
+
+    # Dar espaço
+    st.write("#")
 
     # Filtrar os dados para obter as umidade desejadas e médias
     umidade_media = umidade['Umidade_Media']
@@ -211,14 +255,18 @@ elif subpagina_selecionada == 'Pico de Umidade':
     umidade_desejada = umidade['Umidade_Desejada']
     datas = umidade['Data/Hora']
 
-     # Encontrar os horários de maiores picos na umidade
+    # Encontrar os horários de maiores picos na umidade
     horarios_maiores_picos = datas[ umidade_medias > umidade_desejada]
     horarios_maiores_picos.value_counts()
     
+    #Título do Gráfico
+    st.write("#")
+    st.write("<div style='text-align: center;'>Abaixo,👇, destacado em vermelho, podemos observar os picos de temperatura ao longo de todo o Período.</div>", unsafe_allow_html=True)  
+
     # Gráfico Interativo dos picos
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=datas, y= umidade_medias, mode='lines', name='Temperatura Média'))
-    fig.add_trace(go.Scatter(x=datas, y=umidade_desejada, mode='lines', name='Temperatura Desejada'))
+    fig.add_trace(go.Scatter(x=datas, y= umidade_medias, mode='lines', name='Umidade Média'))
+    fig.add_trace(go.Scatter(x=datas, y=umidade_desejada, mode='lines', name='Umidade Desejada'))
     fig.add_trace(go.Scatter(x=horarios_maiores_picos, y=umidade_medias[umidade_medias > umidade_desejada], mode='markers', marker=dict(color='red'), name='Picos de Umidade'))
     fig.update_layout(
         title='',
@@ -235,9 +283,10 @@ elif subpagina_selecionada == 'Pico de Umidade':
     fig.update_xaxes(tickangle=45)
 
     # Adicionar interatividade para exibir os valores no hover
-    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Temperatura: %{y}')
-    # Exibir o gráfico interativo no Streamlit
-    st.plotly_chart(fig)
+    fig.update_traces(hovertemplate='Data/Hora: %{x}<br>Umidade: %{y}')
+
+    # Exibir o gráfico interativo no Streamlit e deixar a barra menu ausente
+    st.plotly_chart(fig, config={'displayModeBar': False})
         
     # Converter a coluna "Data/hora" para o tipo datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
@@ -301,14 +350,16 @@ elif subpagina_selecionada == 'Pico de Umidade':
     # Ordenar a tabela em ordem decrescente pela coluna 'Quantidade de Picos'
     resultados = resultados.sort_values(by='Quantidade de Picos', ascending=False)
 
-
+    # Título do gráfico
+    st.write("#")
+    st.write("<div style='text-align: center;'>Abaixo,👇, Resultado dos picos filtrados por período.</div>", unsafe_allow_html=True)  
+  
  # Criar o gráfico de barras interativo usando o Plotly
     fig_bar = px.bar(resultados, x='Período', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
 
     # Exibir o gráfico de barras e o gráfico de linha no Streamlit
-    st.plotly_chart(fig_bar)
+    st.plotly_chart(fig_bar, config={'displayModeBar': False})
 
-            
     # Converter a coluna 'Data/Hora' em um objeto datetime
     umidade['Data/Hora'] = pd.to_datetime(umidade['Data/Hora'])
 
@@ -327,15 +378,18 @@ elif subpagina_selecionada == 'Pico de Umidade':
     # Ordenar os resultados por quantidade de picos em ordem decrescente
     picos_por_semana = picos_por_semana.sort_values(ascending=False)
 
+    # Título do gráfico
+    st.write("#")
+    st.write("<div style='text-align: center;'>Abaixo,👇, Resultado dos picos filtrados por Semanas.</div>", unsafe_allow_html=True)  
+  
     # Criar o gráfico de barras interativo com o Plotly
     fig_bar = px.bar(resultados, x='Semana', y='Quantidade de Picos', labels={'Quantidade de Picos': 'Quantidade de Picos'}, hover_data=['Quantidade de Picos'])
 
     # Atualizar o layout do gráfico
-    fig_bar.update_layout(title='Quantidade de Picos por Semana', xaxis_title='Semana', yaxis_title='Quantidade de Picos')
+    fig_bar.update_layout(title='', xaxis_title='Semana', yaxis_title='Quantidade de Picos')
 
     # Exibir o gráfico no Streamlit
-    st.plotly_chart(fig_bar)
-
+    st.plotly_chart(fig_bar, config={'displayModeBar': False})
 
 
 
