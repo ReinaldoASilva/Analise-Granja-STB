@@ -38,7 +38,19 @@ st.write("A umidade no aviário foi um problema durante o tempo do lote, \
         com temperatura acima dos limites recomendados. Além disso, a umidade chegou a atingir picos de 99%, o que agrava ainda mais a situação. \
         Nesse contexto, é essencial tomar medidas para proporcionar um ambiente o mais confortável possível para as aves.")
 
-st.write(" ➡️ : Algumas medias que podem ser tomadas para um controle mais eficiente da ambiência")
+st.write("Com base nessas informações, nosso objetivo é reduzir os picos de temperatura e umidade no aviário,\
+     criando um ambiente estável e confortável para as aves. Para alcançar esse objetivo, implementaremos\
+     medidas de controle ambiental visando uma redução de aproximadamente 10% a 20% nos picos de \
+     temperatura e umidade. É importante ressaltar que a projeção ideal pode variar dependendo do tipo de ave,\
+     das condições climáticas locais e das metas do produtor. Recomendamos consultar especialistas em manejo avícola \
+     para determinar a projeção mais adequada para cada caso específico. Monitorar de perto os resultados e ajustar \
+     as estratégias conforme necessário é fundamental. Destacamos a importância do monitoramento contínuo das condições \
+    do aviário para garantir o bem-estar das aves e o sucesso do projeto.")
+
+
+
+
+st.write(" ➡️ : Sugerimos algumas medias que podem ser tomadas para um controle mais eficiente da ambiência")
 st.write(" - Ventilação adequada: Garanta uma boa circulação de ar no aviário para ajudar a reduzir a umidade, permitindo a saída do ar úmido e a entrada de ar fresco.")
 st.write(" - Instalação de Janelas.")
 st.write(" - Instalação de inlet")
