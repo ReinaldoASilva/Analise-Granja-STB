@@ -18,21 +18,24 @@ st.set_page_config(layout="wide")
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
 subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
 
+# Visualizar logo
 
- # Carrega o logotipo
-logo_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/logo.png"  # Substitua pelo caminho correto do seu logotipo
+current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
+logo_path = current_dir /'logo.png'
+
 logo = Image.open(logo_path)
 
 # Define a largura fixa do logotipo
 logo_width = 300
 
-
 # Cria uma coluna para exibir o logotipo acima do menu
 col_logo, col_menu = st.sidebar.columns([logo_width, 1])
 
 # Exibe o logotipo na coluna do logotipo
+
 with col_logo:
     st.image(logo, width=logo_width)
+
 
 #################################################################### PÁGINA ANÁLISE DE UMIDADE ####################################################################
 

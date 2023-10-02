@@ -18,19 +18,23 @@ st.set_page_config(layout="wide")
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
 
-# Carrega o logotipo
-logo_path = "/Users/reinaldoblack/Documents/documentos/Sitio-Balão/Analise-Granja-STB/logo.png"  # Substitua pelo caminho correto do seu logotipo
+# Visualizar logo
+current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
+logo_path = current_dir /'logo.png'
+
 logo = Image.open(logo_path)
 
 # Define a largura fixa do logotipo
 logo_width = 300
 
-    # Cria uma coluna para exibir o logotipo acima do menu
+# Cria uma coluna para exibir o logotipo acima do menu
 col_logo, col_menu = st.sidebar.columns([logo_width, 1])
 
-    # Exibe o logotipo na coluna do logotipo
+# Exibe o logotipo na coluna do logotipo
+
 with col_logo:
     st.image(logo, width=logo_width)
+
 
 #################################################################### PÁGINA Análise de Temperatura ####################################################################
 
