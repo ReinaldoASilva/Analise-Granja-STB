@@ -226,19 +226,22 @@ elif subpagina_selecionada == "Pico de Temperatura":
     temperaturas_medias = granja['Temperatura_Media']
     temperatura_desejada = granja['Temperatura_Desejada']
     datas = granja['Data/Hora']
-    datas = datas.to_frame().rename(columns={0: 'Data/Hora'})
+    #datas = datas.to_frame().rename(columns={0: 'Data/Hora'})
 
-    # Encontrar os horários de maiores picos na temperatura
+     # Encontrar os horários de maiores picos na umidade
     horarios_maiores_picos = datas[temperaturas_medias > temperatura_desejada]
 
-    # Obter as datas únicas com picos de temperatura
-    granja['Data/Hora'] = pd.to_datetime(granja['Data/Hora'])
-    #dias_picos_temperatura = horarios_maiores_picos.dt.date.unique()
-    dias_picos_temperatura = granja['Data/Hora'].dt.date.unique()
-    # Calcular a quantidade de dias com picos de temperatura
+    # Obter as dataas únicas com picos de temperatura
+    horarios_maiores_picos = pd.to_datetime(horarios_maiores_picos)
+    dias_picos_temperatura = horarios_maiores_picos.dt.date.unique()
+
+    # Calcular quantidades de dias com pico de temperatura
     quantidade_dias_picos = len(dias_picos_temperatura)
 
-    total_dias = len(granja['Data/Hora'].dt.date.unique())
+    # Calcular a quantidade de dias
+    granja['data'] = pd.to_datetime(granja['Data/Hora'])
+    quantidade_dias = granja['data'].dt.date.nunique()
+    quantidade_dias_inteiro = int(quantidade_dias)
 
     # Determinar quantos dias seguidos de pico de temperatura ocorreram
     dias_seguidos_picos = 0
@@ -265,7 +268,7 @@ elif subpagina_selecionada == "Pico de Temperatura":
 
     with col4:
         # Exibir o valor total de dias
-        st.metric(label="Total de dias", value=total_dias)
+        st.metric(label="Total de dias", value=quantidade_dias_inteiro)
     
     with col5:
         # Exibir a quantidade de dias com picos de temperatura
@@ -399,7 +402,6 @@ elif subpagina_selecionada == "Pico de Temperatura":
 
     # Ordenar os resultados por quantidade de picos em ordem decrescente
     picos_por_semana = picos_por_semana.sort_values(ascending=False)
-
 
     # Texto
     st.write("#")

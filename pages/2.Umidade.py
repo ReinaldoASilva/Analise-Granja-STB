@@ -249,9 +249,14 @@ elif subpagina_selecionada == 'Pico de Umidade':
             dias_seguidos_picos_umidade += 1
 
     # Criar colunas
-    dias_de_pico, dias_seguidos_picos, total_dias_umidade = st.columns(3)
+    col1, dias_de_pico, dias_seguidos_picos, total_dias_umidade, col5 = st.columns(5)
     
     # Adicionar valores nas colunas criadas acima
+
+    with col1:
+        # Exibir a quantidade de dias com picos de temperatura
+        st.metric(label="", value="")
+
     with dias_de_pico:
         st.metric(label= 'Dias de pico', value= quantidade_dias_picos)
 
@@ -260,7 +265,10 @@ elif subpagina_selecionada == 'Pico de Umidade':
 
     with total_dias_umidade:
         st.metric(label='Total de Dias', value=quantidade_dias_inteiro)
-
+    
+    with col5:
+        # Exibir a quantidade de dias com picos de temperatura
+        st.metric(label="", value="")
 
     # Filtrar os dados para obter as umidade médias e desejadas
     umidade_medias = umidade['Umidade_Media']
