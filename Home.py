@@ -23,6 +23,15 @@ col_logo, col_menu = st.sidebar.columns([logo_width, 1])
 with col_logo:
     st.image(logo, width=logo_width)
 
+# Remover o menu do streamlit
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Título
 st.markdown("<h2 style='text-align: center;'>Avaliando a Performance em Ambientes Controlados!</h2>", unsafe_allow_html=True)
