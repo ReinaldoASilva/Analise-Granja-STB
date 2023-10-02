@@ -16,7 +16,7 @@ st.set_page_config(layout="wide")
 
 # Definindo as opções do submenu de Temperatura
 submenu_umidade = ['Análise de Umidade', 'Análise por Período', 'Pico de Umidade']
-subpagina_selecionada = st.sidebar.radio('Umidade',submenu_umidade)
+subpagina_selecionada = st.sidebar.radio('2.Umidade',submenu_umidade)
 
 # Visualizar logo
 

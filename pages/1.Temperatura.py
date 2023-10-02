@@ -16,7 +16,7 @@ st.set_page_config(layout="wide")
 
 # Definindo as opções do submenu de Temperatura
 submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
-subpagina_selecionada = st.sidebar.radio("Temperatura", submenu_temperatura)
+subpagina_selecionada = st.sidebar.radio("1.Temperatura", submenu_temperatura)
 
 # Visualizar logo
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
