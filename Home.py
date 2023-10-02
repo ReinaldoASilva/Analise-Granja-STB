@@ -40,9 +40,23 @@ st.markdown("Este projeto de análise de dados tem como objetivo investigar como
 Analisaremos os momentos em que a temperatura e umidade atingem niveis extremos, buscando compreender como esses fatores influenciam na conversão alimentar..\
 A ideia é buscar melhorias nas práticas de manejo e identificar os intervalos perfeitos de temperatura e umidade, com o objetivo de maximizar os lucros nas granjas analisadas.")
 
-
-# Visualizando a imagem
+# Imagem
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
 data = current_dir / 'producao-avicola.jpg'
 image = Image.open(data)
-st.image(image)
+
+container = st.container()
+container.markdown(
+    f"""
+    <style>
+    .center {{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+container.image(image, use_column_width=True, caption='')
