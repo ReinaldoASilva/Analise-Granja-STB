@@ -15,7 +15,7 @@ granja = pd.read_csv(data)
 st.set_page_config(layout="wide")
 
 # Definindo as opções do submenu de Temperatura
-submenu_temperatura = ["Análise de Temperatura", "Analise por Perído", "Pico de Temperatura"]
+submenu_temperatura = ["Análise de Temperatura", "Análise por Período", "Pico de Temperatura"]
 subpagina_selecionada = st.sidebar.radio("1.Temperatura", submenu_temperatura)
 
 # Visualizar logo
@@ -106,7 +106,7 @@ if subpagina_selecionada == "Análise de Temperatura":
 
     # Gráfico
     st.write('#')
-    st.markdown("<p style='text-align: center;'>No gráfico abaixo 👇 veremos a flutuação da temperatura durante o dia. A linha vermelha é nossa temperatura ideal!</p>", unsafe_allow_html=True)# Gráfico com as temperaturas
+    st.markdown("<p style='text-align: center;'>No gráfico abaixo 👇 veremos a flutuação da temperatura durante o dia.</p>", unsafe_allow_html=True)# Gráfico com as temperaturas
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Media'], mode='lines', name='Temperatura'))
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Temperatura_Desejada'], mode='lines', name='Temperatura Ideal'))
@@ -129,7 +129,7 @@ if subpagina_selecionada == "Análise de Temperatura":
 
 #################################################################### PÁGINA ANÁLISE POR PERÍODO ####################################################################
 
-elif subpagina_selecionada == "Analise por Perído":
+elif subpagina_selecionada == "Análise por Período":
    
    # Seleção de períodos para analisar os dados# Conteúdo da subpágina "Análise por Período"
 

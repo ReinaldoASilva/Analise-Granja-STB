@@ -102,11 +102,11 @@ if subpagina_selecionada == 'Análise de Umidade':
 
     # Título
     st.write('#')
-    st.markdown("<p style='text-align: center;'>No gráfico abaixo 👇 veremos a flutuação da Umidade durante o dia. A linha vermelha é nossa Umidade ideal!</p>", unsafe_allow_html=True)# Gráfico com as temperaturas
+    st.markdown("<p style='text-align: center;'>No gráfico abaixo 👇 veremos a flutuação da Umidade durante o dia!</p>", unsafe_allow_html=True)# Gráfico com as temperaturas
 
     # Gráfico 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Umidade_Media'], mode='lines', name='Temperatura'))
+    fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Umidade_Media'], mode='lines', name='Umidade'))
     fig.add_trace(go.Scatter(x=dados_selecionados['Data/Hora'], y=dados_selecionados['Umidade_Desejada'],mode='lines', name='Umidade Ideal'))
     fig.update_layout(
         title='',

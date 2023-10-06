@@ -3,12 +3,14 @@ from pathlib import Path
 from PIL import Image
 import pandas as pd
 
+
 # modo responsivo
 st.set_page_config(layout="wide")
 
+
 # Carrega o logotipo
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
-logo_path = current_dir / 'logo.png'
+logo_path = current_dir / ' logosemfundo.png'
 
 logo = Image.open(logo_path)
 
@@ -34,10 +36,10 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Título
-st.markdown("<h2 style='text-align: center;'>Avaliando a Performance em Ambientes Controlados!</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>Avaliando a Performance em Ambientes Controlados.</h2>", unsafe_allow_html=True)
 # Texto
 st.markdown("Este projeto de análise de dados tem como objetivo investigar como as condições ambientais afetam o desempenho das aves. \
-Analisaremos os momentos em que a temperatura e umidade atingem niveis extremos, buscando compreender como esses fatores influenciam na conversão alimentar..\
+Analisaremos os momentos em que a temperatura e umidade atingem niveis extremos, buscando compreender como esses fatores influenciam na conversão alimentar.\
 A ideia é buscar melhorias nas práticas de manejo e identificar os intervalos perfeitos de temperatura e umidade, com o objetivo de maximizar os lucros nas granjas analisadas.")
 
 # Imagem
