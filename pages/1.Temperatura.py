@@ -20,7 +20,7 @@ subpagina_selecionada = st.sidebar.radio("1.Temperatura", submenu_temperatura)
 
 # Visualizar logo
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
-logo_path = current_dir /'logo.png'
+logo_path = current_dir /'brancotransparente.png'
 
 logo = Image.open(logo_path)
 

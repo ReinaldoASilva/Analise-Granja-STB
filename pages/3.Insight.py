@@ -29,6 +29,26 @@ container.image(image, use_column_width=True, caption='')
 
 
 
+# Visualizar logo
+current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
+logo_path = current_dir /'brancotransparente.png'
+
+logo = Image.open(logo_path)
+
+# Define a largura fixa do logotipo
+logo_width = 300
+
+# Cria uma coluna para exibir o logotipo acima do menu
+col_logo, col_menu = st.sidebar.columns([logo_width, 1])
+
+# Exibe o logotipo na coluna do logotipo
+
+with col_logo:
+    st.image(logo, width=logo_width)
+
+
+
+
 st.title("Insight")
 
 st.write("A umidade no aviário foi um problema durante o tempo do lote, \

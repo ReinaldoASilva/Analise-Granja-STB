@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 
 # Carrega o logotipo
 current_dir = Path(__file__).parent if '__file__' in locals() else Path.cwd()
-logo_path = current_dir / ' logosemfundo.png'
+logo_path = current_dir / 'brancotransparente.png'
 
 logo = Image.open(logo_path)
 
